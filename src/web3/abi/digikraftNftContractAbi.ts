@@ -1,12 +1,6 @@
-export const validateNft721ContractAbi = [
+export const digikraftNftContractAbi = [
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'adminListAddress_',
-        type: 'address',
-      },
-    ],
+    inputs: [],
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
@@ -58,6 +52,37 @@ export const validateNft721ContractAbi = [
       },
     ],
     name: 'ApprovalForAll',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+      {
+        components: [
+          {
+            internalType: 'address payable',
+            name: 'account',
+            type: 'address',
+          },
+          {
+            internalType: 'uint96',
+            name: 'value',
+            type: 'uint96',
+          },
+        ],
+        indexed: false,
+        internalType: 'struct LibPart.Part[]',
+        name: 'royalties',
+        type: 'tuple[]',
+      },
+    ],
+    name: 'RoyaltiesSet',
     type: 'event',
   },
   {
@@ -130,19 +155,12 @@ export const validateNft721ContractAbi = [
         type: 'uint256',
       },
     ],
-    name: 'burn',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'currentId',
+    name: 'getApproved',
     outputs: [
       {
-        internalType: 'uint256',
+        internalType: 'address',
         name: '',
-        type: 'uint256',
+        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -152,16 +170,28 @@ export const validateNft721ContractAbi = [
     inputs: [
       {
         internalType: 'uint256',
-        name: 'tokenId',
+        name: 'id',
         type: 'uint256',
       },
     ],
-    name: 'getApproved',
+    name: 'getRaribleV2Royalties',
     outputs: [
       {
-        internalType: 'address',
+        components: [
+          {
+            internalType: 'address payable',
+            name: 'account',
+            type: 'address',
+          },
+          {
+            internalType: 'uint96',
+            name: 'value',
+            type: 'uint96',
+          },
+        ],
+        internalType: 'struct LibPart.Part[]',
         name: '',
-        type: 'address',
+        type: 'tuple[]',
       },
     ],
     stateMutability: 'view',
@@ -189,43 +219,6 @@ export const validateNft721ContractAbi = [
       },
     ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_address',
-        type: 'address',
-      },
-    ],
-    name: 'isOwnerOrAdmin',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'buyer',
-        type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'tokenUri',
-        type: 'string',
-      },
-    ],
-    name: 'mint',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -302,7 +295,7 @@ export const validateNft721ContractAbi = [
       },
       {
         internalType: 'bytes',
-        name: 'data',
+        name: '_data',
         type: 'bytes',
       },
     ],
@@ -327,25 +320,6 @@ export const validateNft721ContractAbi = [
     name: 'setApprovalForAll',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes4',
-        name: 'interfaceId',
-        type: 'bytes4',
-      },
-    ],
-    name: 'supportsInterface',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -398,7 +372,7 @@ export const validateNft721ContractAbi = [
         type: 'uint256',
       },
     ],
-    name: 'transfer',
+    name: 'transferFrom',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -407,23 +381,94 @@ export const validateNft721ContractAbi = [
     inputs: [
       {
         internalType: 'address',
-        name: 'from',
+        name: '_to',
         type: 'address',
       },
       {
+        internalType: 'string',
+        name: 'tokenURI',
+        type: 'string',
+      },
+      {
+        internalType: 'address payable',
+        name: '_royaltiesRecipientAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'uint96',
+        name: '_percentageBasisPoints',
+        type: 'uint96',
+      },
+    ],
+    name: 'mint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
-        name: 'to',
+        name: '_to',
+        type: 'address',
+      },
+      {
+        internalType: 'string',
+        name: 'tokenURI',
+        type: 'string',
+      },
+    ],
+    name: 'mint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_tokenId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_salePrice',
+        type: 'uint256',
+      },
+    ],
+    name: 'royaltyInfo',
+    outputs: [
+      {
+        internalType: 'address',
+        name: 'receiver',
         type: 'address',
       },
       {
         internalType: 'uint256',
-        name: 'tokenId',
+        name: 'royaltyAmount',
         type: 'uint256',
       },
     ],
-    name: 'transferFrom',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes4',
+        name: 'interfaceId',
+        type: 'bytes4',
+      },
+    ],
+    name: 'supportsInterface',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
 ];

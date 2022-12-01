@@ -11,7 +11,7 @@ import appConfig from './config/app.config';
 import { validate } from './common/validators/env.validator';
 import { WalletModule } from './wallet/wallet.module';
 import { Web3Module } from './web3/web3.module';
-import { AdminWalletModule } from './admin-wallet/admin-wallet.module';
+import { NftModule } from './nft/nft.module';
 
 EnvHelper.verifyNodeEnv();
 
@@ -37,8 +37,8 @@ EnvHelper.verifyNodeEnv();
       inject: [ConfigService],
     }),
     WalletModule,
-    AdminWalletModule,
     Web3Module,
+    NftModule,
   ],
   controllers: [AppController],
   providers: [AppService],

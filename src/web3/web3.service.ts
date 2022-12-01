@@ -3,7 +3,7 @@ import { AbiItem } from 'web3-utils';
 import { ConfigService } from '@nestjs/config';
 import { Wallet } from './types/wallet.interface';
 import { WEB3_PROVIDER_TOKEN } from './web3.types';
-import { validateNft721ContractAbi } from './abi/validateNft721ContractAbi';
+import { digikraftNftContractAbi } from './abi/digikraftNftContractAbi';
 
 export interface txReturnProps {
   txHash?: string;
@@ -12,15 +12,15 @@ export interface txReturnProps {
 
 @Injectable()
 export class Web3Service {
-  public validateNft721Contract;
+  public digikraftNftContract;
   private nftContractAddress;
   private firstBlockNumber;
 
   constructor(@Inject(WEB3_PROVIDER_TOKEN) public web3, private readonly configService: ConfigService) {
     this.nftContractAddress = configService.get('web3Config.nftContractAddress');
 
-    this.validateNft721Contract = new this.web3.eth.Contract(
-      validateNft721ContractAbi as AbiItem[],
+    this.digikraftNftContract = new this.web3.eth.Contract(
+      digikraftNftContractAbi as AbiItem[],
       this.nftContractAddress,
     );
 
@@ -92,7 +92,7 @@ export class Web3Service {
     }
   }
 
-  async createWallet(): Promise<Partial<Wallet>> {
+  async createWallet(): Promise<Wallet> {
     try {
       const wallet: Wallet = await this.web3.eth.accounts.create();
 
@@ -102,7 +102,7 @@ export class Web3Service {
     }
   }
 
-  async getBalance(address: string): Promise<number> {
+  async getMaticBalance(address: string): Promise<number> {
     try {
       const balance = await this.web3.eth.getBalance(address);
 
@@ -141,13 +141,11 @@ export class Web3Service {
   async transferNft(operator: string, from: string, to: string, tokenId: number): Promise<string> {
     const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    const res = await this.sendSignedTx(
-      this.nftContractAddress,
-      this.validateNft721Contract,
-      adminAccount,
-      'transfer',
-      [from, to, tokenId],
-    );
+    const res = await this.sendSignedTx(this.nftContractAddress, this.digikraftNftContract, adminAccount, 'transfer', [
+      from,
+      to,
+      tokenId,
+    ]);
 
     if (!res) {
       throw new Error('Failed to send signed transaction');

@@ -1,5 +1,5 @@
 export interface MaticTransferDto {
-  userUuid: string;
-  to: string;
+  userUuidFrom: string;
+  walletAddressTo: string;
   amount: number;
 }

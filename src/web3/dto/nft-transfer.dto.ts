@@ -1,5 +1,5 @@
 export interface NftTransferDto {
   userUuidFrom: string;
-  userUuidTo: string;
+  walletAddressTo: string;
   tokenId: number;
 }

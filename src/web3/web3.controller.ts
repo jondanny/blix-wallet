@@ -3,25 +3,26 @@ import { Web3Service } from './web3.service';
 import { WalletService } from '../wallet/wallet.service';
 import { NftTransferDto } from './dto/nft-transfer.dto';
 import { MaticTransferDto } from './dto/matic-transfer.dto';
-import { AdminWalletService } from '../admin-wallet/admin-wallet.service';
 import { Wallet } from '../wallet/wallet.entity';
+import { NftService } from 'src/nft/nft.service';
+import { WalletCreateDto } from './dto/wallet-create.dto';
 
-@Controller('web3')
+@Controller()
 export class Web3Controller {
   private readonly logger = new Logger(Web3Controller.name);
 
   constructor(
     private readonly web3Service: Web3Service,
     private readonly walletService: WalletService,
-    private readonly adminWalletService: AdminWalletService,
+    private readonly nftService: NftService,
   ) {}
 
   @Post('create-wallet')
-  async createWallet(@Body('userUuid') userUuid: string): Promise<Wallet | void> {
-    const walletExists = await this.walletService.exists(userUuid);
+  async createWallet(@Body() body: WalletCreateDto): Promise<Wallet | void> {
+    const walletExists = await this.walletService.exists(body.userUuid);
 
     if (walletExists) {
-      return this.logger.error(`Wallet for user ${userUuid} already exists`);
+      return this.logger.error(`Wallet for user ${body.userUuid} already exists`);
     }
 
     try {
@@ -31,19 +32,19 @@ export class Web3Controller {
         throw new Error('Wallet creation error');
       }
 
-      const user = await this.walletService.create({
-        userUuid: userUuid,
+      const wallet = await this.walletService.create({
+        userUuid: body.userUuid,
         walletAddress: address,
         privateKey,
       });
 
-      if (!user) {
+      if (!wallet) {
         throw new Error('Wallet saving error');
       }
 
-      this.logger.log(`Wallet created for user ${userUuid}: ${user.walletAddress}`);
+      this.logger.log(`Wallet created for user ${body.userUuid}: ${wallet.walletAddress}`);
 
-      return user;
+      return wallet;
     } catch (err) {
       return this.logger.error(err.message);
     }
@@ -51,19 +52,19 @@ export class Web3Controller {
 
   @Get('balance')
   async getBalance(@Query('address') address: string): Promise<number> {
-    return this.web3Service.getBalance(address);
+    return this.web3Service.getMaticBalance(address);
   }
 
   @Post('transfer-matic')
-  async transferMatic(@Body() MaticTransferDto: MaticTransferDto) {
+  async transferMatic(@Body() body: MaticTransferDto) {
     try {
-      const { walletAddress, privateKey } = await this.walletService.findByUserUuid(MaticTransferDto.userUuid);
+      const { walletAddress, privateKey } = await this.walletService.findByUserUuid(body.userUuidFrom);
 
       const transactionHash = this.web3Service.transferMatic(
         privateKey,
         walletAddress,
-        MaticTransferDto.to,
-        MaticTransferDto.amount,
+        body.walletAddressTo,
+        body.amount,
       );
 
       return this.logger.log(`Matic transfered, hash: ${transactionHash}`);
@@ -73,40 +74,34 @@ export class Web3Controller {
   }
 
   @Post('transfer-nft')
-  async transferNft(@Body() NftTransferDto: NftTransferDto) {
-    let adminWalletId = 0;
-
+  async transferNft(@Body() body: NftTransferDto) {
     try {
-      const from = await this.walletService.findByUserUuid(NftTransferDto.userUuidFrom);
-      const to = await this.walletService.findByUserUuid(NftTransferDto.userUuidTo);
+      const from = await this.walletService.findByUserUuid(body.userUuidFrom);
 
-      if (!from || !to) {
-        throw new Error('One or many users in the transfer not found in the database');
+      if (!from) {
+        throw new Error('User in the transfer not found in the database');
       }
 
-      const { id, privateKey: operator, walletAddress } = await this.adminWalletService.findFreeAndSetInUse();
-
-      if (!id) {
-        throw new Error(`No free admin wallet is available`);
-      }
-
-      adminWalletId = id;
       const transactionHash = await this.web3Service.transferNft(
-        operator,
+        from.privateKey,
         from.walletAddress,
-        to.walletAddress,
-        NftTransferDto.tokenId,
+        body.walletAddressTo,
+        body.tokenId,
       );
 
       if (!transactionHash) {
-        throw new Error(`Transaction hash not found, admin account used: ${walletAddress}`);
+        throw new Error(`Transaction hash not found`);
+      }
+
+      const nft = await this.nftService.transfer(body.tokenId, from.walletAddress);
+
+      if (!nft) {
+        throw new Error(`Failed to update database`);
       }
 
       return this.logger.log(`NFT transfered, hash: ${transactionHash}`);
     } catch (err) {
       return this.logger.error(err.message);
-    } finally {
-      await this.adminWalletService.setNotInUse(adminWalletId);
     }
   }
 }
