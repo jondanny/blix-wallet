@@ -27,9 +27,9 @@ describe('Web3Service', () => {
       .mockImplementation((): SignedTransaction => ({ transactionHash: '0xHash' }));
     jest.spyOn(web3Service.web3.eth.accounts, 'create').mockImplementation((): Account => ({} as Account));
     jest
-      .spyOn(web3Service.validateNft721Contract.methods, 'transferNft')
+      .spyOn(web3Service.digikraftNftContract.methods, 'transferNft')
       .mockImplementation(() => ({ encodeABI: (): string => '0xEncodeABI' }));
-    jest.spyOn(web3Service.validateNft721Contract, 'getPastEvents').mockImplementation(() => ({ encodeABI: () => [] }));
+    jest.spyOn(web3Service.digikraftNftContract, 'getPastEvents').mockImplementation(() => ({ encodeABI: () => [] }));
   });
 
   it('should be defined', () => {

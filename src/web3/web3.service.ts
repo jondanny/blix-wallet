@@ -63,7 +63,7 @@ export class Web3Service {
         txHash = hash;
       });
 
-      if (func === 'transfer' || func === 'mint' || func === 'burn') {
+      if (func === 'safeTransferFrom' || func === 'mint' || func === 'burn') {
         const events = await contract.getPastEvents(
           'Transfer',
           {
@@ -106,7 +106,7 @@ export class Web3Service {
     try {
       const balance = await this.web3.eth.getBalance(address);
 
-      return balance;
+      return balance / 10 ** 18;
     } catch (error) {
       throw error;
     }
@@ -141,11 +141,13 @@ export class Web3Service {
   async transferNft(operator: string, from: string, to: string, tokenId: number): Promise<string> {
     const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    const res = await this.sendSignedTx(this.nftContractAddress, this.digikraftNftContract, adminAccount, 'transfer', [
-      from,
-      to,
-      tokenId,
-    ]);
+    const res = await this.sendSignedTx(
+      this.nftContractAddress,
+      this.digikraftNftContract,
+      adminAccount,
+      'safeTransferFrom',
+      [from, to, tokenId],
+    );
 
     if (!res) {
       throw new Error('Failed to send signed transaction');

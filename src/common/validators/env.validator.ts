@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsIn, IsInt, IsString, Min, MinLength, ValidateIf, validateSync } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsString, Min, MinLength, validateSync } from 'class-validator';
 
 export enum Environment {
   Development = 'development',
@@ -69,10 +69,6 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   PRIVATE_KEY: string;
-
-  @IsString()
-  @MinLength(1)
-  ADMIN_LIST_CONTRACT_ADDRESS: string;
 }
 
 export function validate(config: Record<string, unknown>) {

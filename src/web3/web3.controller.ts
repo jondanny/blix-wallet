@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Logger, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Logger,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Web3Service } from './web3.service';
 import { WalletService } from '../wallet/wallet.service';
 import { NftTransferDto } from './dto/nft-transfer.dto';
@@ -6,6 +15,8 @@ import { MaticTransferDto } from './dto/matic-transfer.dto';
 import { Wallet } from '../wallet/wallet.entity';
 import { NftService } from 'src/nft/nft.service';
 import { WalletCreateDto } from './dto/wallet-create.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
 
 @Controller()
 export class Web3Controller {
@@ -17,12 +28,15 @@ export class Web3Controller {
     private readonly nftService: NftService,
   ) {}
 
+  @ApiOperation({ description: `Create wallet for a user` })
+  @ApiResponse(ApiResponseHelper.created(Wallet))
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post('create-wallet')
   async createWallet(@Body() body: WalletCreateDto): Promise<Wallet | void> {
     const walletExists = await this.walletService.exists(body.userUuid);
 
     if (walletExists) {
-      return this.logger.error(`Wallet for user ${body.userUuid} already exists`);
+      throw new Error(`Wallet for user ${body.userUuid} already exists`);
     }
 
     try {
@@ -46,33 +60,40 @@ export class Web3Controller {
 
       return wallet;
     } catch (err) {
-      return this.logger.error(err.message);
+      throw err;
     }
   }
 
+  @ApiOperation({ description: `Get user's Matic balance` })
+  @ApiResponse(ApiResponseHelper.success(Number))
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get('balance')
   async getBalance(@Query('address') address: string): Promise<number> {
     return this.web3Service.getMaticBalance(address);
   }
 
+  @ApiOperation({ description: `Transfer matic to another user` })
   @Post('transfer-matic')
   async transferMatic(@Body() body: MaticTransferDto) {
     try {
       const { walletAddress, privateKey } = await this.walletService.findByUserUuid(body.userUuidFrom);
 
-      const transactionHash = this.web3Service.transferMatic(
+      const transactionHash = await this.web3Service.transferMatic(
         privateKey,
         walletAddress,
         body.walletAddressTo,
         body.amount,
       );
 
-      return this.logger.log(`Matic transfered, hash: ${transactionHash}`);
+      this.logger.log(`Matic transfered, hash: ${transactionHash}`);
+
+      return transactionHash;
     } catch (error) {
       throw error;
     }
   }
 
+  @ApiOperation({ description: `Transfer NFT to another user` })
   @Post('transfer-nft')
   async transferNft(@Body() body: NftTransferDto) {
     try {
@@ -93,13 +114,15 @@ export class Web3Controller {
         throw new Error(`Transaction hash not found`);
       }
 
-      const nft = await this.nftService.transfer(body.tokenId, from.walletAddress);
+      const nft = await this.nftService.transfer(body.tokenId, body.walletAddressTo);
 
       if (!nft) {
         throw new Error(`Failed to update database`);
       }
 
-      return this.logger.log(`NFT transfered, hash: ${transactionHash}`);
+      this.logger.log(`NFT transfered, hash: ${transactionHash}`);
+
+      return transactionHash;
     } catch (err) {
       return this.logger.error(err.message);
     }

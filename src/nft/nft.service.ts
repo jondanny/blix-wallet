@@ -6,7 +6,7 @@ export class NftService {
   constructor(private readonly nftRepository: NftRepository) {}
 
   async create(walletAddress: string, tokenId: number) {
-    const nft = await this.nftRepository.save({ walletAddress, tokenId });
+    const nft = await this.nftRepository.create({ walletAddress, tokenId });
 
     return this.nftRepository.findOneBy({ id: nft.id });
   }
@@ -20,14 +20,15 @@ export class NftService {
   }
 
   async findAllByWalletAddress(walletAddress: string) {
-    return this.nftRepository.findOneBy({ walletAddress });
+    return this.nftRepository.find({ where: { walletAddress } });
   }
 
   async transfer(tokenId: number, walletAddress: string) {
+    console.log('walletAddress:', walletAddress);
     const oldNft = await this.findByTokenId(tokenId);
-    await this.nftRepository.update({ tokenId }, { ...oldNft, walletAddress });
+    await this.nftRepository.update({ tokenId }, { ...oldNft, walletAddress, updatedAt: new Date() });
 
-    return this.nftRepository.findOneBy({ tokenId });
+    return await this.nftRepository.findOneBy({ tokenId });
   }
 
   async remove(id: number) {
