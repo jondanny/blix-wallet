@@ -3,6 +3,8 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Logger,
   Post,
   Query,
@@ -30,15 +32,11 @@ export class Web3Controller {
 
   @ApiOperation({ description: `Create wallet for a user` })
   @ApiResponse(ApiResponseHelper.created(Wallet))
+  @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.CREATED)
   @Post('create-wallet')
   async createWallet(@Body() body: WalletCreateDto): Promise<Wallet | void> {
-    const walletExists = await this.walletService.exists(body.userUuid);
-
-    if (walletExists) {
-      throw new Error(`Wallet for user ${body.userUuid} already exists`);
-    }
-
     try {
       const { address, privateKey } = await this.web3Service.createWallet();
 
@@ -67,6 +65,7 @@ export class Web3Controller {
   @ApiOperation({ description: `Get user's Matic balance` })
   @ApiResponse(ApiResponseHelper.success(Number))
   @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
   @Get('balance')
   async getBalance(@Query('address') address: string): Promise<number> {
     return this.web3Service.getMaticBalance(address);
