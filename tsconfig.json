@@ -11,7 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "public",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
@@ -25,5 +25,5 @@
       "@test/*": ["test/*"]
     }
   },
-  "exclude": ["node_modules", "dist", "**/*.d.ts"]
+  "exclude": ["node_modules", "public", "**/*.d.ts"]
 }
