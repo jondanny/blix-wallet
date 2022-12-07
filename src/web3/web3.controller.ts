@@ -36,7 +36,7 @@ export class Web3Controller {
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.CREATED)
   @Post('create-wallet')
-  async createWallet(@Body() body: WalletCreateDto): Promise<Wallet | void> {
+  async createWallet(@Body() body: WalletCreateDto): Promise<Wallet> {
     try {
       const { address, privateKey } = await this.web3Service.createWallet();
 
