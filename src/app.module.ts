@@ -20,7 +20,7 @@ EnvHelper.verifyNodeEnv();
 @Module({
   imports: [
     ConfigModule.forRoot({
-      // envFilePath: EnvHelper.getEnvFilePath(),
+      envFilePath: EnvHelper.getEnvFilePath(),
       isGlobal: true,
       load: [appConfig, web3Config, databaseConfig],
       validate: validate,
