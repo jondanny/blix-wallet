@@ -14,11 +14,18 @@ import { Web3Module } from './web3/web3.module';
 import { NftModule } from './nft/nft.module';
 import { TransactionMaticModule } from './transaction-matic/transaction-matic.module';
 import { TransactionNftModule } from './transaction-nft/transaction-nft.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 
 EnvHelper.verifyNodeEnv();
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'swagger-static'),
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
+    }),
     ConfigModule.forRoot({
       envFilePath: EnvHelper.getEnvFilePath(),
       isGlobal: true,
