@@ -24,7 +24,7 @@ EnvHelper.verifyNodeEnv();
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'swagger-static'),
-      serveRoot: '/swagger',
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/swagger',
     }),
     ConfigModule.forRoot({
       envFilePath: EnvHelper.getEnvFilePath(),
