@@ -26,7 +26,6 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT || 3000);
   // get the swagger json file (if app is running in development mode)
-  if (process.env.NODE_ENV === 'development') {
     const pathToSwaggerStaticFolder = resolve(process.cwd(), 'swagger-static');
 
     // write swagger json file
@@ -37,6 +36,5 @@ async function bootstrap() {
     const swaggerJson = JSON.stringify(document, null, 2);
     writeFileSync(pathToSwaggerJson, swaggerJson);
     console.log(`Swagger JSON file written to: '/swagger-static/swagger.json'`);
-  }
 }
 bootstrap();
