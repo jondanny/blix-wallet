@@ -1,0 +1,1 @@
+{"statusCode":404,"message":"ENOENT: no such file or directory, stat '/home/valentine/_WORKSPACE/digikraft/blix-wallet/swagger-static/index.html'"}
