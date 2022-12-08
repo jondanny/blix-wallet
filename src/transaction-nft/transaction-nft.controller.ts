@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
+import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 import { FindTransactionNftDto } from './dto/find-transaction-nft.dto';
 import { TransactionNft } from './transaction-nft.entity';
 import { TransactionNftService } from './transaction-nft.service';

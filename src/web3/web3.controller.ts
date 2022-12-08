@@ -18,7 +18,7 @@ import { Wallet } from '../wallet/wallet.entity';
 import { NftService } from 'src/nft/nft.service';
 import { WalletCreateDto } from './dto/wallet-create.dto';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
+import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 
 @Controller()
 export class Web3Controller {

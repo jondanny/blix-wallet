@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WalletExistsByUserUuidValidator } from '@src/wallet/validators/wallet-exists-by-user-uuid.validator';
+import { WalletExistsByUserUuidValidator } from '../../wallet/validators/wallet-exists-by-user-uuid.validator';
 import { IsEthereumAddress, IsInt, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 
 export class NftTransferDto {

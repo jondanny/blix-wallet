@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginatedResultCursor } from '@src/common/pagination/pagination.types';
+import { PaginatedResultCursor } from '../common/pagination/pagination.types';
 import { TransactionMatic } from './transaction-matic.entity';
 
 export class TransactionMaticPaginatedResult {

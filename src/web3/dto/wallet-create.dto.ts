@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { WalletNotExistsByUserUuidValidator } from '@src/wallet/validators/wallet-not-exists-by-user-uuid.validator';
+import { WalletNotExistsByUserUuidValidator } from '../../wallet/validators/wallet-not-exists-by-user-uuid.validator';
 import { IsString, MaxLength, MinLength, Validate } from 'class-validator';
 
 export class WalletCreateDto {

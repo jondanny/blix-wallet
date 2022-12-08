@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEthereumAddress, IsIn, IsInt, IsOptional, Max, Min } from 'class-validator';
-import { CursorFilterDto } from '@src/common/pagination/cursor-filter.dto';
+import { CursorFilterDto } from '../../common/pagination/cursor-filter.dto';
 import { TransactionMatic } from '../transaction-matic.entity';
 import { Type } from 'class-transformer';
 

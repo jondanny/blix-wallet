@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
+import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 import { FindTransactionMaticDto } from './dto/find-transaction-matic.dto';
 import { TransactionMatic } from './transaction-matic.entity';
 import { TransactionMaticService } from './transaction-matic.service';
