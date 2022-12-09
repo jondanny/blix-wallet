@@ -3,15 +3,19 @@ import { WalletService } from '../wallet.service';
 
 @ValidatorConstraint({ name: 'walletExistsByUserUuidValidator', async: true })
 export class WalletExistsByUserUuidValidator implements ValidatorConstraintInterface {
+  private userUuid: string;
+
   constructor(private readonly walletService: WalletService) {}
 
-  async validate(uuid: string, args: ValidationArguments): Promise<boolean> {
-    const walletExists = await this.walletService.exists(uuid);
+  async validate(userUuid: string, args: ValidationArguments): Promise<boolean> {
+    this.userUuid = userUuid;
+
+    const walletExists = await this.walletService.exists({ userUuid });
 
     return Boolean(walletExists);
   }
 
   defaultMessage() {
-    return 'Wallet not found';
+    return `Wallet is not found for userUuid: ${this.userUuid}`;
   }
 }

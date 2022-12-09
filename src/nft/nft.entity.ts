@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Wallet } from '@src/wallet/wallet.entity';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 @Entity('nft')
 export class Nft {
@@ -21,4 +22,9 @@ export class Nft {
   @ApiProperty({ description: 'Updated at date' })
   @Column({ type: 'datetime', nullable: false })
   updatedAt: Date;
+
+  @ApiProperty({ type: () => Wallet })
+  @ManyToOne(() => Wallet, (wallet) => wallet.nfts)
+  @JoinColumn({ name: 'wallet_address', referencedColumnName: 'walletAddress' })
+  wallet: Wallet;
 }

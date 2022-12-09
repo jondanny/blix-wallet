@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { Wallet } from '@src/wallet/wallet.entity';
+import { Nft } from './nft.entity';
 import { NftRepository } from './nft.repository';
 
 @Injectable()
@@ -23,8 +25,11 @@ export class NftService {
     return this.nftRepository.find({ where: { walletAddress } });
   }
 
+  async findAll(wallets: Wallet[]): Promise<Nft[]> {
+    return this.nftRepository.findMany(wallets);
+  }
+
   async transfer(tokenId: number, walletAddress: string) {
-    console.log('walletAddress:', walletAddress);
     const oldNft = await this.findByTokenId(tokenId);
     await this.nftRepository.update({ tokenId }, { ...oldNft, walletAddress, updatedAt: new Date() });
 

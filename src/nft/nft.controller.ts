@@ -20,13 +20,20 @@ import { NftService } from './nft.service';
 export class NftController {
   constructor(private readonly nftService: NftService, private readonly walletService: WalletService) {}
 
-  @ApiOperation({ description: `Get all nfts by wallet address` })
+  @ApiOperation({ description: `Get all nfts by userUuid` })
   @ApiResponse(ApiResponseHelper.success(Nft))
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
-  async findAll(@Query('address') walletAddress: string) {
-    return this.nftService.findAllByWalletAddress(walletAddress);
+  async findAllByUserUuid(@Query('userUuid') userUuid: string) {
+    const wallets = await this.walletService.findAllByUserUuid(userUuid);
+
+    let nfts: Nft[];
+    if (wallets.length) {
+      nfts = await this.nftService.findAll(wallets);
+    }
+
+    return nfts;
   }
 
   @ApiOperation({ description: `Add nft and owner info to Nft table when minting` })
@@ -34,8 +41,8 @@ export class NftController {
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.CREATED)
   @Post()
-  async create(@Body() body: NftCreateDto) {
-    const { walletAddress } = await this.walletService.findByUserUuid(body.userUuid);
+  async create(@Body() body: NftCreateDto): Promise<Nft> {
+    const { walletAddress } = await this.walletService.findByUserUuidAndType(body.userUuid, body.walletType);
 
     return this.nftService.create(walletAddress, body.tokenId);
   }

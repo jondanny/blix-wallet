@@ -8,8 +8,8 @@ export class WalletRepository extends Repository<Wallet> {
     super(Wallet, dataSource.manager);
   }
 
-  async exists(userUuid: string): Promise<boolean> {
-    const count = await this.countBy({ userUuid });
+  async exists(param: Partial<Wallet>): Promise<boolean> {
+    const count = await this.countBy(param);
 
     return count > 0;
   }

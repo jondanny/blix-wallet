@@ -5,10 +5,11 @@ import { WalletModule } from 'src/wallet/wallet.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Nft } from './nft.entity';
 import { NftRepository } from './nft.repository';
+import { WalletExistsByUserUuidValidator } from '@src/wallet/validators/wallet-exists-by-user-uuid.validator';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Nft]), WalletModule],
-  providers: [NftService, NftRepository],
+  providers: [NftService, NftRepository, WalletExistsByUserUuidValidator],
   controllers: [NftController],
   exports: [NftService],
 })
