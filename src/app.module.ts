@@ -12,8 +12,6 @@ import { validate } from './common/validators/env.validator';
 import { WalletModule } from './wallet/wallet.module';
 import { Web3Module } from './web3/web3.module';
 import { NftModule } from './nft/nft.module';
-import { TransactionMaticModule } from './transaction-matic/transaction-matic.module';
-import { TransactionNftModule } from './transaction-nft/transaction-nft.module';
 
 EnvHelper.verifyNodeEnv();
 
@@ -41,8 +39,6 @@ EnvHelper.verifyNodeEnv();
     WalletModule,
     Web3Module,
     NftModule,
-    TransactionMaticModule,
-    TransactionNftModule,
   ],
   controllers: [AppController],
   providers: [AppService],

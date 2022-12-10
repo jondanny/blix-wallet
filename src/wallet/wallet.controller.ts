@@ -6,13 +6,11 @@ import {
   HttpStatus,
   Logger,
   Post,
-  Res,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
 import { AddMetamaskValidationDto } from '@src/wallet/dto/add-metamask.validation.dto';
-import { Response } from 'express';
 import { Wallet } from './wallet.entity';
 import { WalletService } from './wallet.service';
 import { WalletType } from './wallet.types';
@@ -24,11 +22,11 @@ export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
   @ApiOperation({ description: `Add metamask wallet to user account` })
-  @ApiResponse(ApiResponseHelper.created())
+  @ApiResponse(ApiResponseHelper.created(Wallet))
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @UseInterceptors(ClassSerializerInterceptor)
   @Post('add-metamask')
-  async addMetamaskWallet(@Body() body: AddMetamaskValidationDto, @Res() res: Response): Promise<void> {
+  async addMetamaskWallet(@Body() body: AddMetamaskValidationDto): Promise<Wallet> {
     try {
       const wallet: Wallet = await this.walletService.create({
         ...body,
@@ -41,7 +39,7 @@ export class WalletController {
 
       this.logger.log(`Metamask wallet added for user ${body.userUuid}: ${wallet.walletAddress}`);
 
-      res.status(HttpStatus.CREATED).send();
+      return wallet;
     } catch (error) {
       throw error;
     }

@@ -63,30 +63,24 @@ export class Web3Service {
         txHash = hash;
       });
 
-      if (func === 'safeTransferFrom' || func === 'mint' || func === 'burn') {
-        const events = await contract.getPastEvents(
-          'Transfer',
-          {
-            fromBlock: this.firstBlockNumber,
-            toBlock: 'latest',
-          },
-          (err) => {
-            if (err) {
-              throw new Error('Failed to get events among the given blocks');
-            }
-          },
-        );
+      const events = await contract.getPastEvents(
+        'Transfer',
+        {
+          fromBlock: this.firstBlockNumber,
+          toBlock: 'latest',
+        },
+        (err) => {
+          if (err) {
+            throw new Error('Failed to get events among the given blocks');
+          }
+        },
+      );
 
-        const tokenId = events.filter((event) => event.transactionHash === txHash)[0].returnValues.tokenId;
+      const tokenId = events.filter((event) => event.transactionHash === txHash)[0].returnValues.tokenId;
 
-        this.firstBlockNumber = await this.web3.eth.getBlockNumber();
+      this.firstBlockNumber = await this.web3.eth.getBlockNumber();
 
-        return { txHash, tokenId };
-      } else if (func === 'addAdmin') {
-        this.firstBlockNumber = await this.web3.eth.getBlockNumber();
-
-        return { txHash };
-      }
+      return { txHash, tokenId };
     } catch (error) {
       throw error;
     }

@@ -60,7 +60,7 @@ export class Web3Controller {
 
       return wallet.walletAddress;
     } catch (err) {
-      throw err;
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -74,13 +74,16 @@ export class Web3Controller {
   }
 
   @ApiOperation({ description: `Transfer NFT to another user` })
+  @ApiResponse(ApiResponseHelper.success(String))
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.CREATED)
   @Post('transfer-to-metamask')
-  async transferNft(@Body() body: NftTransferDto) {
+  async transferNft(@Body() body: NftTransferDto): Promise<string> {
     try {
       const wallets = await this.walletService.findAllByUserUuid(body.userUuid);
 
       if (wallets.length !== 2) {
-        throw new Error(`User does not have both Blix and Metamask wallet`);
+        throw new Error(`User does not have all Blix and Metamask wallet`);
       }
 
       const transactionHash = await this.web3Service.transferNft(
@@ -94,17 +97,19 @@ export class Web3Controller {
         throw new Error(`Transaction hash not found`);
       }
 
-      const nft = await this.nftService.transfer(body.tokenId, wallets[1].walletAddress);
+      const nft = await this.nftService.transfer(body.tokenId);
 
       if (!nft) {
-        throw new Error(`Failed to update database`);
+        throw new Error(`Database Error: Failed to update database`);
       }
 
       this.logger.log(`NFT transfered, hash: ${transactionHash}`);
 
       return transactionHash;
     } catch (err) {
-      return this.logger.error(err.message);
+      this.logger.error(err.message);
+
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

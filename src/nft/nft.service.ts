@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Wallet } from '@src/wallet/wallet.entity';
+import { WalletType } from '@src/wallet/wallet.types';
+import { NftCreateDto } from './dto/nft-create.dto';
 import { Nft } from './nft.entity';
 import { NftRepository } from './nft.repository';
 
@@ -7,10 +8,8 @@ import { NftRepository } from './nft.repository';
 export class NftService {
   constructor(private readonly nftRepository: NftRepository) {}
 
-  async create(walletAddress: string, tokenId: number) {
-    const nft = await this.nftRepository.create({ walletAddress, tokenId });
-
-    return this.nftRepository.findOneBy({ id: nft.id });
+  async create(data: NftCreateDto): Promise<Nft> {
+    return await this.nftRepository.save(data);
   }
 
   async findOne(id: number) {
@@ -21,17 +20,13 @@ export class NftService {
     return this.nftRepository.findOneBy({ tokenId });
   }
 
-  async findAllByWalletAddress(walletAddress: string) {
-    return this.nftRepository.find({ where: { walletAddress } });
+  async findAllByUserUuid(userUuid: string): Promise<Nft[]> {
+    return this.nftRepository.find({ where: { userUuid } });
   }
 
-  async findAll(wallets: Wallet[]): Promise<Nft[]> {
-    return this.nftRepository.findMany(wallets);
-  }
-
-  async transfer(tokenId: number, walletAddress: string) {
+  async transfer(tokenId: number) {
     const oldNft = await this.findByTokenId(tokenId);
-    await this.nftRepository.update({ tokenId }, { ...oldNft, walletAddress, updatedAt: new Date() });
+    await this.nftRepository.update({ tokenId }, { ...oldNft, walletType: WalletType.Metamask, updatedAt: new Date() });
 
     return await this.nftRepository.findOneBy({ tokenId });
   }

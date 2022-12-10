@@ -26,14 +26,7 @@ export class NftController {
   @HttpCode(HttpStatus.OK)
   @Get()
   async findAllByUserUuid(@Query('userUuid') userUuid: string) {
-    const wallets = await this.walletService.findAllByUserUuid(userUuid);
-
-    let nfts: Nft[];
-    if (wallets.length) {
-      nfts = await this.nftService.findAll(wallets);
-    }
-
-    return nfts;
+    return this.nftService.findAllByUserUuid(userUuid);
   }
 
   @ApiOperation({ description: `Add nft and owner info to Nft table when minting` })
@@ -42,8 +35,6 @@ export class NftController {
   @HttpCode(HttpStatus.CREATED)
   @Post()
   async create(@Body() body: NftCreateDto): Promise<Nft> {
-    const { walletAddress } = await this.walletService.findByUserUuidAndType(body.userUuid, body.walletType);
-
-    return this.nftService.create(walletAddress, body.tokenId);
+    return this.nftService.create(body);
   }
 }

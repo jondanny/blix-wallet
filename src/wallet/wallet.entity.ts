@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Nft } from '@src/nft/nft.entity';
-import { Entity, Column, PrimaryGeneratedColumn, DeleteDateColumn, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, DeleteDateColumn } from 'typeorm';
 import { WalletType } from './wallet.types';
 
 @Entity('wallet')
@@ -35,9 +34,4 @@ export class Wallet {
   @ApiProperty({ description: 'Deleted at date' })
   @DeleteDateColumn({ type: 'datetime', nullable: true })
   deletedAt?: Date;
-
-  @ApiProperty({ type: () => Nft })
-  @OneToMany(() => Nft, (nft) => nft.wallet)
-  @JoinColumn({ name: 'wallet_address', referencedColumnName: 'walletAddress' })
-  nfts: Nft[];
 }

@@ -8,6 +8,7 @@ import { Wallet } from './wallet.entity';
 import { WalletRepository } from './wallet.repository';
 import { WalletService } from './wallet.service';
 import { WalletController } from './wallet.controller';
+import { WalletExistsByWalletTypeValidator } from './validators/wallet-exists-by-wallet-type.validator';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Wallet])],
@@ -18,6 +19,7 @@ import { WalletController } from './wallet.controller';
     WalletNotExistsByUserUuidValidator,
     WalletNotExistsByAddressValidator,
     MetamaskNotExistsValidator,
+    WalletExistsByWalletTypeValidator,
   ],
   exports: [WalletService],
   controllers: [WalletController],
