@@ -12,6 +12,7 @@ import { validate } from './common/validators/env.validator';
 import { WalletModule } from './wallet/wallet.module';
 import { Web3Module } from './web3/web3.module';
 import { NftModule } from './nft/nft.module';
+import { AdminWalletModule } from './admin-wallet/admin-wallet.module';
 
 EnvHelper.verifyNodeEnv();
 
@@ -39,6 +40,7 @@ EnvHelper.verifyNodeEnv();
     WalletModule,
     Web3Module,
     NftModule,
+    AdminWalletModule,
   ],
   controllers: [AppController],
   providers: [AppService],

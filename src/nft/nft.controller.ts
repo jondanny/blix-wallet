@@ -10,8 +10,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ApiResponseHelper } from 'src/common/helpers/api-response.helper';
-import { WalletService } from 'src/wallet/wallet.service';
+import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
+import { WalletService } from '@src/wallet/wallet.service';
 import { NftCreateDto } from './dto/nft-create.dto';
 import { Nft } from './nft.entity';
 import { NftService } from './nft.service';

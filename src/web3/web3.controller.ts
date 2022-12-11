@@ -20,6 +20,7 @@ import { NftService } from '@src/nft/nft.service';
 import { WalletCreateDto } from './dto/wallet-create.dto';
 import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 import { WalletType } from '@src/wallet/wallet.types';
+import { AdminWalletService } from '@src/admin-wallet/admin-wallet.service';
 
 @Controller()
 export class Web3Controller {
@@ -29,6 +30,7 @@ export class Web3Controller {
     private readonly web3Service: Web3Service,
     private readonly walletService: WalletService,
     private readonly nftService: NftService,
+    private readonly adminWalletService: AdminWalletService,
   ) {}
 
   @ApiOperation({ description: `Create wallet for a user` })
@@ -79,7 +81,20 @@ export class Web3Controller {
   @HttpCode(HttpStatus.CREATED)
   @Post('transfer-to-metamask')
   async transferNft(@Body() body: NftTransferDto): Promise<string> {
+    let adminWalletId = 0;
+
     try {
+      const {
+        id,
+        privateKey: operator,
+        walletAddress: adminWallet,
+      } = await this.adminWalletService.findFreeAndSetInUse();
+
+      if (!id) {
+        throw new Error(`No free admin wallet is available`);
+      }
+
+      adminWalletId = id;
       const wallets = await this.walletService.findAllByUserUuid(body.userUuid);
 
       if (wallets.length !== 2) {
@@ -87,7 +102,7 @@ export class Web3Controller {
       }
 
       const transactionHash = await this.web3Service.transferNft(
-        wallets[0].privateKey,
+        operator,
         wallets[0].walletAddress,
         wallets[1].walletAddress,
         body.tokenId,
@@ -103,13 +118,17 @@ export class Web3Controller {
         throw new Error(`Database Error: Failed to update database`);
       }
 
-      this.logger.log(`NFT transfered, hash: ${transactionHash}`);
+      this.logger.log(
+        `NFT transfered, tokenId: ${body.tokenId}, hash: ${transactionHash}, admin account used: ${adminWallet}`,
+      );
 
       return transactionHash;
     } catch (err) {
       this.logger.error(err.message);
 
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    } finally {
+      await this.adminWalletService.setNotInUse(adminWalletId);
     }
   }
 }
