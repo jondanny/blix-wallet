@@ -9,7 +9,7 @@ export class NftCreateDto {
   tokenId: number;
 
   @ApiProperty({
-    example: '279c0aba-cb39-4e2b-adf1-f0a9d42652ab',
+    example: 'RIQU3JFD2YM2LDxvxGHBNtfKDw12',
     required: true,
     description: 'Uuid of new wallet owner',
   })

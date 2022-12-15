@@ -3,7 +3,7 @@ import { WalletExistsByUserUuidValidator } from '../../wallet/validators/wallet-
 import { IsInt, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 
 export class NftTransferDto {
-  @ApiProperty({ example: '279c0aba-cb39-4e2b-adf1-f0a9d42652ab', required: true, description: 'Uuid of Nft sender' })
+  @ApiProperty({ example: 'RIQU3JFD2YM2LDxvxGHBNtfKDw12', required: true, description: 'Uuid of Nft sender' })
   @IsString()
   @MinLength(1)
   @MaxLength(64)
