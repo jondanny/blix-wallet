@@ -153,4 +153,18 @@ export class Web3Service {
 
     return res.txHash;
   }
+
+  async mint(operator: string, receiver: string, metadataUri: string, feeNumerator: number): Promise<number> {
+    const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
+
+    const res = await this.sendSignedTx(this.nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
+      metadataUri,
+      receiver,
+      feeNumerator,
+    ]);
+
+    if (!res) throw new Error('Failed to send signed transaction');
+
+    return parseInt(res.tokenId);
+  }
 }

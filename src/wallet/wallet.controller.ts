@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  HttpCode,
   HttpException,
   HttpStatus,
   Logger,
@@ -25,6 +26,7 @@ export class WalletController {
   @ApiResponse(ApiResponseHelper.created(Wallet))
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.CREATED)
   @Post('add-metamask')
   async addMetamaskWallet(@Body() body: AddMetamaskValidationDto): Promise<Wallet> {
     try {

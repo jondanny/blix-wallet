@@ -1,6 +1,17 @@
 export const digikraftNftContractAbi = [
   {
-    inputs: [],
+    inputs: [
+      {
+        internalType: 'string',
+        name: '_baseTokenURI',
+        type: 'string',
+      },
+      {
+        internalType: 'address',
+        name: '_adminListAddress',
+        type: 'address',
+      },
+    ],
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
@@ -58,31 +69,19 @@ export const digikraftNftContractAbi = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'tokenId',
-        type: 'uint256',
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
       },
       {
-        components: [
-          {
-            internalType: 'address payable',
-            name: 'account',
-            type: 'address',
-          },
-          {
-            internalType: 'uint96',
-            name: 'value',
-            type: 'uint96',
-          },
-        ],
-        indexed: false,
-        internalType: 'struct LibPart.Part[]',
-        name: 'royalties',
-        type: 'tuple[]',
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
       },
     ],
-    name: 'RoyaltiesSet',
+    name: 'OwnershipTransferred',
     type: 'event',
   },
   {
@@ -155,12 +154,19 @@ export const digikraftNftContractAbi = [
         type: 'uint256',
       },
     ],
-    name: 'getApproved',
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'currentTokenId',
     outputs: [
       {
-        internalType: 'address',
+        internalType: 'uint256',
         name: '',
-        type: 'address',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -170,28 +176,16 @@ export const digikraftNftContractAbi = [
     inputs: [
       {
         internalType: 'uint256',
-        name: 'id',
+        name: 'tokenId',
         type: 'uint256',
       },
     ],
-    name: 'getRaribleV2Royalties',
+    name: 'getApproved',
     outputs: [
       {
-        components: [
-          {
-            internalType: 'address payable',
-            name: 'account',
-            type: 'address',
-          },
-          {
-            internalType: 'uint96',
-            name: 'value',
-            type: 'uint96',
-          },
-        ],
-        internalType: 'struct LibPart.Part[]',
+        internalType: 'address',
         name: '',
-        type: 'tuple[]',
+        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -222,6 +216,48 @@ export const digikraftNftContractAbi = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_address',
+        type: 'address',
+      },
+    ],
+    name: 'isOwnerOrAdmin',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: 'uri',
+        type: 'string',
+      },
+      {
+        internalType: 'address',
+        name: 'buyer',
+        type: 'address',
+      },
+      {
+        internalType: 'uint96',
+        name: 'feeNumerator',
+        type: 'uint96',
+      },
+    ],
+    name: 'mint',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'name',
     outputs: [
@@ -229,6 +265,19 @@ export const digikraftNftContractAbi = [
         internalType: 'string',
         name: '',
         type: 'string',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'owner',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -248,6 +297,42 @@ export const digikraftNftContractAbi = [
         internalType: 'address',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_tokenId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_salePrice',
+        type: 'uint256',
+      },
+    ],
+    name: 'royaltyInfo',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -295,7 +380,7 @@ export const digikraftNftContractAbi = [
       },
       {
         internalType: 'bytes',
-        name: '_data',
+        name: 'data',
         type: 'bytes',
       },
     ],
@@ -320,6 +405,25 @@ export const digikraftNftContractAbi = [
     name: 'setApprovalForAll',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes4',
+        name: 'interfaceId',
+        type: 'bytes4',
+      },
+    ],
+    name: 'supportsInterface',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -381,94 +485,13 @@ export const digikraftNftContractAbi = [
     inputs: [
       {
         internalType: 'address',
-        name: '_to',
+        name: 'newOwner',
         type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'tokenURI',
-        type: 'string',
-      },
-      {
-        internalType: 'address payable',
-        name: '_royaltiesRecipientAddress',
-        type: 'address',
-      },
-      {
-        internalType: 'uint96',
-        name: '_percentageBasisPoints',
-        type: 'uint96',
       },
     ],
-    name: 'mint',
+    name: 'transferOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_to',
-        type: 'address',
-      },
-      {
-        internalType: 'string',
-        name: 'tokenURI',
-        type: 'string',
-      },
-    ],
-    name: 'mint',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_tokenId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: '_salePrice',
-        type: 'uint256',
-      },
-    ],
-    name: 'royaltyInfo',
-    outputs: [
-      {
-        internalType: 'address',
-        name: 'receiver',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'royaltyAmount',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes4',
-        name: 'interfaceId',
-        type: 'bytes4',
-      },
-    ],
-    name: 'supportsInterface',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
 ];

@@ -2,13 +2,11 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  Get,
   HttpCode,
   HttpException,
   HttpStatus,
   Logger,
   Post,
-  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -34,12 +32,12 @@ export class Web3Controller {
   ) {}
 
   @ApiOperation({ description: `Create wallet for a user` })
-  @ApiResponse(ApiResponseHelper.created(String))
+  @ApiResponse(ApiResponseHelper.created())
   @ApiResponse(ApiResponseHelper.validationErrors(['Validation failed (uuid is expected)']))
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.CREATED)
   @Post('create-wallet')
-  async createBlixWallet(@Body() body: WalletCreateDto): Promise<string> {
+  async createBlixWallet(@Body() body: WalletCreateDto) {
     try {
       const { address, privateKey } = await this.web3Service.createWallet();
 
@@ -60,27 +58,18 @@ export class Web3Controller {
 
       this.logger.log(`Wallet created for user ${body.userUuid}: ${wallet.walletAddress}`);
 
-      return wallet.walletAddress;
+      return { walletAddress: wallet.walletAddress };
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  @ApiOperation({ description: `Get user's Matic balance` })
-  @ApiResponse(ApiResponseHelper.success(Number))
-  @UseInterceptors(ClassSerializerInterceptor)
-  @HttpCode(HttpStatus.OK)
-  @Get('balance')
-  async getBalance(@Query('address') address: string): Promise<number> {
-    return this.web3Service.getMaticBalance(address);
-  }
-
-  @ApiOperation({ description: `Transfer NFT to another user` })
+  @ApiOperation({ description: `Transfer NFT to user's external metamask wallet` })
   @ApiResponse(ApiResponseHelper.success(String))
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.CREATED)
   @Post('transfer-to-metamask')
-  async transferNft(@Body() body: NftTransferDto): Promise<string> {
+  async transferNft(@Body() body: NftTransferDto) {
     let adminWalletId = 0;
 
     try {
@@ -122,7 +111,7 @@ export class Web3Controller {
         `NFT transfered, tokenId: ${body.tokenId}, hash: ${transactionHash}, admin account used: ${adminWallet}`,
       );
 
-      return transactionHash;
+      return { transactionHash };
     } catch (err) {
       this.logger.error(err.message);
 

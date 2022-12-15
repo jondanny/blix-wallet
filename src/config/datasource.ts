@@ -6,8 +6,6 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 dotenv.config({ path: EnvHelper.getEnvFilePath() });
 
-console.log(path.join(__dirname, '../database/migrations/*{.ts,.js'));
-
 export const AppDataSource = new DataSource({
   type: 'mysql',
   host: process.env.TYPEORM_HOST,

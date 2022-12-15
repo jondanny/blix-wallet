@@ -33,5 +33,5 @@ export class Wallet {
 
   @ApiProperty({ description: 'Deleted at date' })
   @DeleteDateColumn({ type: 'datetime', nullable: true })
-  deletedAt?: Date;
+  deletedAt: Date;
 }

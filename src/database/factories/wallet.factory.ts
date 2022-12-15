@@ -1,14 +1,26 @@
 import { faker } from '@faker-js/faker';
-import { AppDataSource } from '../../config/datasource';
-import { Wallet } from '../../wallet/wallet.entity';
+import { WalletType } from '@src/wallet/wallet.types';
+import { AppDataSource } from '@src/config/datasource';
+import { Wallet } from '@src/wallet/wallet.entity';
 
 export class WalletFactory {
-  static async create(data?: Partial<Wallet>) {
+  static async createBlix(data?: Partial<Wallet>) {
     const wallet = new Wallet();
 
     wallet.userUuid = faker.datatype.uuid();
     wallet.walletAddress = faker.finance.ethereumAddress();
     wallet.privateKey = faker.datatype.string(64);
+    wallet.type = WalletType.Blix;
+
+    return AppDataSource.manager.getRepository(Wallet).save({ ...wallet, ...data });
+  }
+
+  static async createMetamask(data?: Partial<Wallet>) {
+    const wallet = new Wallet();
+
+    wallet.userUuid = faker.datatype.uuid();
+    wallet.walletAddress = faker.finance.ethereumAddress();
+    wallet.type = WalletType.Metamask;
 
     return AppDataSource.manager.getRepository(Wallet).save({ ...wallet, ...data });
   }
