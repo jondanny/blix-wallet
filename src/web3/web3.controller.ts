@@ -58,7 +58,10 @@ export class Web3Controller {
 
       this.logger.log(`Wallet created for user ${body.userUuid}: ${wallet.walletAddress}`);
 
-      return { walletAddress: wallet.walletAddress };
+      return {
+        message: 'wallet_created',
+        walletAddress: wallet.walletAddress,
+      };
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -111,7 +114,10 @@ export class Web3Controller {
         `NFT transfered, tokenId: ${body.tokenId}, hash: ${transactionHash}, admin account used: ${adminWallet}`,
       );
 
-      return { transactionHash };
+      return {
+        message: 'nft_transfered_to_metamask',
+        transactionHash,
+      };
     } catch (err) {
       this.logger.error(err.message);
 
