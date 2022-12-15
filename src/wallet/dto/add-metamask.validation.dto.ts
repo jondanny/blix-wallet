@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEthereumAddress, IsString, IsUUID, Validate } from 'class-validator';
+import { IsEthereumAddress, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 import { MetamaskNotExistsValidator } from '@src/wallet/validators/metamask-not-exists.validator';
 import { WalletNotExistsByAddressValidator } from '../validators/wallet-not-exists-by-address.validator copy';
 
@@ -10,7 +10,9 @@ export class AddMetamaskValidationDto {
     description: 'Uuid of new wallet owner',
   })
   @IsString()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(32)
   @Validate(MetamaskNotExistsValidator)
   userUuid: string;
 

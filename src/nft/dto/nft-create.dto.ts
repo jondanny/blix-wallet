@@ -15,7 +15,7 @@ export class NftCreateDto {
   })
   @IsString()
   @MinLength(1)
-  @MaxLength(64)
+  @MaxLength(32)
   userUuid: string;
 
   @ApiProperty({ example: 'blix', required: true, description: 'Destination wallet of minted Nft' })

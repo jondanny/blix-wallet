@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WalletNotExistsByUserUuidValidator } from '../../wallet/validators/wallet-not-exists-by-user-uuid.validator';
-import { IsString, IsUUID, Validate } from 'class-validator';
+import { IsString, MaxLength, MinLength, Validate } from 'class-validator';
 
 export class WalletCreateDto {
   @ApiProperty({
@@ -9,7 +9,9 @@ export class WalletCreateDto {
     description: 'Uuid of new wallet owner',
   })
   @IsString()
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(32)
   @Validate(WalletNotExistsByUserUuidValidator)
   userUuid: string;
 }

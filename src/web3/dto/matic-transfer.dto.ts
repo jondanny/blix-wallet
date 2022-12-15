@@ -1,10 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WalletExistsByUserUuidValidator } from '../../wallet/validators/wallet-exists-by-user-uuid.validator';
-import { IsEthereumAddress, IsNumber, IsUUID, Validate } from 'class-validator';
+import { IsEthereumAddress, IsNumber, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 
 export class MaticTransferDto {
   @ApiProperty({ example: '279c0aba-cb39-4e2b-adf1-f0a9d42652ab', required: true, description: 'Uuid of sender' })
-  @IsUUID()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(32)
   @Validate(WalletExistsByUserUuidValidator)
   userUuidFrom: string;
 
