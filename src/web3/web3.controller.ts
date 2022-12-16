@@ -35,7 +35,7 @@ export class Web3Controller {
     private readonly adminWalletService: AdminWalletService,
     private readonly configService: ConfigService,
   ) {
-    this.network = this.configService.get('network');
+    this.network = this.configService.get('web3.network');
   }
 
   @ApiOperation({ description: `Create wallet for a user` })
