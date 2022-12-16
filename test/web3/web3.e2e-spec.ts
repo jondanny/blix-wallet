@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { v4 as uuid } from 'uuid';
+import { faker } from '@faker-js/faker';
 import { AppBootstrapManager } from '@src/app-bootstrap.manager';
 import { AppDataSource } from '@src/config/datasource';
 import { Web3Service } from '@src/web3/web3.service';
@@ -51,13 +51,13 @@ describe('Web3 (e2e)', () => {
       .set('Accept', 'application/json')
       .then((response) => {
         expect(response.body.message).toEqual(
-          expect.arrayContaining(['userUuid must be shorter than or equal to 32 characters']),
+          expect.arrayContaining(['userUuid must be shorter than or equal to 64 characters']),
         );
       });
   });
 
   it('Should create a wallet and return wallet address', async () => {
-    const userUuid = uuid();
+    const userUuid = faker.datatype.string(30);
 
     await request(app.getHttpServer())
       .post('/api/v1/create-wallet')
@@ -71,7 +71,7 @@ describe('Web3 (e2e)', () => {
   it('Should transfer Nft to metamsk wallet', async () => {
     const admin = await AdminWalletFactory.getAdmin();
 
-    const userUuid = uuid();
+    const userUuid = faker.datatype.string(30);
 
     const { address: walletAddress, privateKey } = await web3Service.createWallet();
 
@@ -90,7 +90,7 @@ describe('Web3 (e2e)', () => {
 
     const nftTransferData = {
       userUuid,
-      tokenId,
+      tokenId: `POLYGON:0x4cd7f55756ac3d4c91d315329fb27297b9f4b12c:${tokenId}`,
     };
 
     await request(app.getHttpServer())
