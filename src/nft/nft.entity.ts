@@ -8,8 +8,8 @@ export class Nft {
   id: number;
 
   @ApiProperty({ description: 'Token Id of this Nft' })
-  @Column({ nullable: false })
-  tokenId: number;
+  @Column({ nullable: false, length: 64, unique: true })
+  tokenId: string;
 
   @ApiProperty({ description: 'User unique uuid', maximum: 36 })
   @Column({ nullable: false, length: 100 })

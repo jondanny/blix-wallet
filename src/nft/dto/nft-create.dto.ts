@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsInt, IsString, MaxLength, MinLength, Validate } from 'class-validator';
+import { IsIn, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 import { WalletExistsByWalletTypeValidator } from '@src/wallet/validators/wallet-exists-by-wallet-type.validator';
 import { WalletType } from '@src/wallet/wallet.types';
 
 export class NftCreateDto {
   @ApiProperty({ example: 1, required: true, description: 'TokenId of Nft' })
-  @IsInt()
-  tokenId: number;
+  @IsString()
+  @MinLength(1)
+  @MaxLength(32)
+  tokenId: string;
 
   @ApiProperty({
     example: 'RIQU3JFD2YM2LDxvxGHBNtfKDw12',

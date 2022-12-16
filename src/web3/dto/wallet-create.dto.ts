@@ -11,7 +11,7 @@ export class WalletCreateDto {
   @IsString()
   @IsString()
   @MinLength(1)
-  @MaxLength(32)
+  @MaxLength(64)
   @Validate(WalletNotExistsByUserUuidValidator)
   userUuid: string;
 }

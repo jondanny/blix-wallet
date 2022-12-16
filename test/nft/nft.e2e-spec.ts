@@ -1,6 +1,5 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
-import { v4 as uuid } from 'uuid';
 import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
 import { AppBootstrapManager } from '@src/app-bootstrap.manager';
@@ -39,7 +38,7 @@ describe('Nft (e2e)', () => {
     const { userUuid, type: walletType } = await WalletFactory.createBlix();
 
     const nftCreateData = {
-      tokenId: faker.datatype.number(),
+      tokenId: faker.datatype.string(),
       userUuid,
       walletType,
     };
@@ -57,7 +56,7 @@ describe('Nft (e2e)', () => {
   });
 
   it(`Should get all existing nfts for a specific userUuid`, async () => {
-    const userUuid = uuid();
+    const userUuid = faker.datatype.string(30);
 
     const nft = await NftFactory.mintToBlixWallet({ userUuid });
 

@@ -7,7 +7,7 @@ export class WalletFactory {
   static async createBlix(data?: Partial<Wallet>) {
     const wallet = new Wallet();
 
-    wallet.userUuid = faker.datatype.uuid();
+    wallet.userUuid = faker.datatype.string(30);
     wallet.walletAddress = faker.finance.ethereumAddress();
     wallet.privateKey = faker.datatype.string(64);
     wallet.type = WalletType.Blix;
@@ -18,7 +18,7 @@ export class WalletFactory {
   static async createMetamask(data?: Partial<Wallet>) {
     const wallet = new Wallet();
 
-    wallet.userUuid = faker.datatype.uuid();
+    wallet.userUuid = faker.datatype.string(30);
     wallet.walletAddress = faker.finance.ethereumAddress();
     wallet.type = WalletType.Metamask;
 

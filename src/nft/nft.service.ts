@@ -16,7 +16,7 @@ export class NftService {
     return this.nftRepository.findOneBy({ id });
   }
 
-  async findByTokenId(tokenId: number) {
+  async findByTokenId(tokenId: string) {
     return this.nftRepository.findOneBy({ tokenId });
   }
 
@@ -24,7 +24,7 @@ export class NftService {
     return this.nftRepository.find({ where: { userUuid } });
   }
 
-  async transfer(tokenId: number) {
+  async transfer(tokenId: string) {
     const oldNft = await this.findByTokenId(tokenId);
     await this.nftRepository.update({ tokenId }, { ...oldNft, walletType: WalletType.Metamask, updatedAt: new Date() });
 

@@ -93,11 +93,13 @@ export class Web3Controller {
         throw new Error(`User does not have all Blix and Metamask wallet`);
       }
 
+      const tokenId = parseInt(body.tokenId.split(':')[1].split(':')[1]);
+
       const transactionHash = await this.web3Service.transferNft(
         operator,
         wallets[0].walletAddress,
         wallets[1].walletAddress,
-        body.tokenId,
+        tokenId,
       );
 
       if (!transactionHash) {

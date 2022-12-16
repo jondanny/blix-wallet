@@ -51,7 +51,7 @@ describe('Web3 (e2e)', () => {
       .set('Accept', 'application/json')
       .then((response) => {
         expect(response.body.message).toEqual(
-          expect.arrayContaining(['userUuid must be shorter than or equal to 64 characters']),
+          expect.arrayContaining(['userUuid must be shorter than or equal to 32 characters']),
         );
       });
   });
@@ -81,9 +81,12 @@ describe('Web3 (e2e)', () => {
 
     await WalletFactory.createMetamask({ userUuid, walletAddress: metamaskAddress });
 
-    const tokenId = await web3Service.mint(admin.privateKey, blixWallet.walletAddress, 'metadata_uri', 500);
+    const tokenId: number = await web3Service.mint(admin.privateKey, blixWallet.walletAddress, 'metadata_uri', 500);
 
-    const { id: nftId } = await NftFactory.mintToBlixWallet({ tokenId, userUuid });
+    const { id: nftId } = await NftFactory.mintToBlixWallet({
+      tokenId: `POLYGON:0x4cd7f55756ac3d4c91d315329fb27297b9f4b12c:${tokenId}`,
+      userUuid,
+    });
 
     const nftTransferData = {
       userUuid,

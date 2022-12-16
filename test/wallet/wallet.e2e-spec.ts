@@ -1,6 +1,5 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
-import { v4 as uuid } from 'uuid';
 import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
 import { AppBootstrapManager } from '@src/app-bootstrap.manager';
