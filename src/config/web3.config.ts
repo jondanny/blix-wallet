@@ -8,4 +8,5 @@ export default registerAs('web3Config', () => ({
   privateKey: process.env.PRIVATE_KEY,
   biconomyApiKey: process.env.BICONOMY_API_KEY,
   nftStorageApiKey: process.env.NFT_STORAGE_API_KEY,
+  network: process.env.NETWORK,
 }));

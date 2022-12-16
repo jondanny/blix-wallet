@@ -38,3 +38,11 @@ lerna-debug.log*
 .env.*
 !.env.example
 !.env.test
+
+# Hardhat
+/hardhat/coverage
+/hardhat/coverage.json
+/hardhat/typechain
+/hardhat/typechain-types
+/hardhat/cache
+/hardhat/artifacts

@@ -2,13 +2,8 @@ export const digikraftNftContractAbi = [
   {
     inputs: [
       {
-        internalType: 'string',
-        name: '_baseTokenURI',
-        type: 'string',
-      },
-      {
         internalType: 'address',
-        name: '_adminListAddress',
+        name: 'adminListAddress_',
         type: 'address',
       },
     ],
@@ -63,25 +58,6 @@ export const digikraftNftContractAbi = [
       },
     ],
     name: 'ApprovalForAll',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'previousOwner',
-        type: 'address',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'newOwner',
-        type: 'address',
-      },
-    ],
-    name: 'OwnershipTransferred',
     type: 'event',
   },
   {
@@ -161,7 +137,7 @@ export const digikraftNftContractAbi = [
   },
   {
     inputs: [],
-    name: 'currentTokenId',
+    name: 'currentId',
     outputs: [
       {
         internalType: 'uint256',
@@ -237,19 +213,14 @@ export const digikraftNftContractAbi = [
   {
     inputs: [
       {
-        internalType: 'string',
-        name: 'uri',
-        type: 'string',
-      },
-      {
         internalType: 'address',
         name: 'buyer',
         type: 'address',
       },
       {
-        internalType: 'uint96',
-        name: 'feeNumerator',
-        type: 'uint96',
+        internalType: 'string',
+        name: 'tokenUri',
+        type: 'string',
       },
     ],
     name: 'mint',
@@ -271,19 +242,6 @@ export const digikraftNftContractAbi = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'owner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [
       {
         internalType: 'uint256',
@@ -297,42 +255,6 @@ export const digikraftNftContractAbi = [
         internalType: 'address',
         name: '',
         type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_tokenId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: '_salePrice',
-        type: 'uint256',
-      },
-    ],
-    name: 'royaltyInfo',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -476,7 +398,7 @@ export const digikraftNftContractAbi = [
         type: 'uint256',
       },
     ],
-    name: 'transferFrom',
+    name: 'transfer',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -485,11 +407,21 @@ export const digikraftNftContractAbi = [
     inputs: [
       {
         internalType: 'address',
-        name: 'newOwner',
+        name: 'from',
         type: 'address',
       },
+      {
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
     ],
-    name: 'transferOwnership',
+    name: 'transferFrom',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

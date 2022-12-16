@@ -1,12 +1,10 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModule } from '@nestjs/testing';
-import { faker } from '@faker-js/faker';
 import * as request from 'supertest';
 import { AppBootstrapManager } from '@src/app-bootstrap.manager';
 import { AppDataSource } from '@src/config/datasource';
 import { TestHelper } from '@test/helpers/test.helper';
 import { NftFactory } from '@src/database/factories/nft.factory';
-import { WalletFactory } from '@src/database/factories/wallet.factory';
 
 describe('Nft (e2e)', () => {
   let app: INestApplication;
@@ -34,29 +32,8 @@ describe('Nft (e2e)', () => {
     jest.resetAllMocks();
   });
 
-  it(`Should post an nft and get response`, async () => {
-    const { userUuid, type: walletType } = await WalletFactory.createBlix();
-
-    const nftCreateData = {
-      tokenId: faker.datatype.string(),
-      userUuid,
-      walletType,
-    };
-
-    await request(app.getHttpServer())
-      .post('/api/v1/nft')
-      .send(nftCreateData)
-      .set('Accept', 'application/json')
-      .then((response) => {
-        expect(response.body).toEqual(
-          expect.objectContaining({ tokenId: nftCreateData.tokenId, userUuid, walletType }),
-        );
-        expect(response.status).toBe(HttpStatus.CREATED);
-      });
-  });
-
   it(`Should get all existing nfts for a specific userUuid`, async () => {
-    const userUuid = faker.datatype.string(30);
+    const userUuid = 'RIQU3JFD2YM2LDxvxGHBNtfKDw12';
 
     const nft = await NftFactory.mintToBlixWallet({ userUuid });
 

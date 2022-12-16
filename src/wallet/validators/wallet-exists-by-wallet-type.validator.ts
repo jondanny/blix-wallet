@@ -1,4 +1,4 @@
-import { NftCreateDto } from '@src/nft/dto/nft-create.dto';
+import { NftMintDto } from '@src/web3/dto/nft-mint.dto';
 import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { WalletService } from '../wallet.service';
 import { WalletType } from '../wallet.types';
@@ -11,7 +11,7 @@ export class WalletExistsByWalletTypeValidator implements ValidatorConstraintInt
   constructor(private readonly walletService: WalletService) {}
 
   async validate(walletType: WalletType, args: ValidationArguments): Promise<boolean> {
-    const { userUuid } = args.object as NftCreateDto;
+    const { userUuid } = args.object as NftMintDto;
 
     this.userUuid = userUuid;
     this.walletType = walletType;

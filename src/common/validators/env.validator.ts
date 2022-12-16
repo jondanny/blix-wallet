@@ -64,11 +64,11 @@ class EnvironmentVariables {
 
   @IsString()
   @MinLength(1)
-  NFT_CONTRACT_ADDRESS: string;
+  PRIVATE_KEY: string;
 
   @IsString()
   @MinLength(1)
-  PRIVATE_KEY: string;
+  NETWORK: string;
 }
 
 export function validate(config: Record<string, unknown>) {

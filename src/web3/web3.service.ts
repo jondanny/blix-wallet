@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AbiItem } from 'web3-utils';
-import { ConfigService } from '@nestjs/config';
 import { Wallet } from './types/wallet.interface';
 import { WEB3_PROVIDER_TOKEN } from './web3.types';
 import { digikraftNftContractAbi } from './abi/digikraftNftContractAbi';
+import { nftContractAddress } from '@hardhat/config/contracts';
 
 export interface txReturnProps {
   txHash?: string;
@@ -13,16 +13,10 @@ export interface txReturnProps {
 @Injectable()
 export class Web3Service {
   public digikraftNftContract;
-  private nftContractAddress;
   private firstBlockNumber;
 
-  constructor(@Inject(WEB3_PROVIDER_TOKEN) public web3, private readonly configService: ConfigService) {
-    this.nftContractAddress = configService.get('web3Config.nftContractAddress');
-
-    this.digikraftNftContract = new this.web3.eth.Contract(
-      digikraftNftContractAbi as AbiItem[],
-      this.nftContractAddress,
-    );
+  constructor(@Inject(WEB3_PROVIDER_TOKEN) public web3) {
+    this.digikraftNftContract = new this.web3.eth.Contract(digikraftNftContractAbi as AbiItem[], nftContractAddress);
 
     this.web3.eth.getBlockNumber().then((res) => {
       this.firstBlockNumber = res;
@@ -135,13 +129,11 @@ export class Web3Service {
   async transferNft(operator: string, from: string, to: string, tokenId: number): Promise<string> {
     const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    const res = await this.sendSignedTx(
-      this.nftContractAddress,
-      this.digikraftNftContract,
-      adminAccount,
-      'safeTransferFrom',
-      [from, to, tokenId],
-    );
+    const res = await this.sendSignedTx(nftContractAddress, this.digikraftNftContract, adminAccount, 'transfer', [
+      from,
+      to,
+      tokenId,
+    ]);
 
     if (!res) {
       throw new Error('Failed to send signed transaction');
@@ -154,13 +146,12 @@ export class Web3Service {
     return res.txHash;
   }
 
-  async mint(operator: string, receiver: string, metadataUri: string, feeNumerator: number): Promise<number> {
+  async mint(operator: string, receiver: string, metadataUri: string): Promise<number> {
     const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    const res = await this.sendSignedTx(this.nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
-      metadataUri,
+    const res = await this.sendSignedTx(nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
       receiver,
-      feeNumerator,
+      metadataUri,
     ]);
 
     if (!res) throw new Error('Failed to send signed transaction');

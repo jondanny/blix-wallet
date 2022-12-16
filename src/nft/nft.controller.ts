@@ -1,18 +1,15 @@
 import {
-  Body,
   ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
   HttpStatus,
-  Post,
   Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
 import { WalletService } from '@src/wallet/wallet.service';
-import { NftCreateDto } from './dto/nft-create.dto';
 import { Nft } from './nft.entity';
 import { NftService } from './nft.service';
 
@@ -27,14 +24,5 @@ export class NftController {
   @Get()
   async findAllByUserUuid(@Query('userUuid') userUuid: string) {
     return this.nftService.findAllByUserUuid(userUuid);
-  }
-
-  @ApiOperation({ description: `Add nft and owner info to Nft table when minting` })
-  @ApiResponse(ApiResponseHelper.created(Nft))
-  @UseInterceptors(ClassSerializerInterceptor)
-  @HttpCode(HttpStatus.CREATED)
-  @Post()
-  async create(@Body() body: NftCreateDto): Promise<Nft> {
-    return this.nftService.create(body);
   }
 }

@@ -9,6 +9,7 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Web3Service } from './web3.service';
 import { WalletService } from '@src/wallet/wallet.service';
@@ -20,17 +21,22 @@ import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 import { WalletType } from '@src/wallet/wallet.types';
 import { AdminWalletService } from '@src/admin-wallet/admin-wallet.service';
 import { NftMintDto } from './dto/nft-mint.dto';
+import { nftContractAddress } from '@hardhat/config/contracts';
 
 @Controller()
 export class Web3Controller {
   private readonly logger = new Logger(Web3Controller.name);
+  private network;
 
   constructor(
     private readonly web3Service: Web3Service,
     private readonly walletService: WalletService,
     private readonly nftService: NftService,
     private readonly adminWalletService: AdminWalletService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.network = this.configService.get('network');
+  }
 
   @ApiOperation({ description: `Create wallet for a user` })
   @ApiResponse(ApiResponseHelper.created())
@@ -94,15 +100,28 @@ export class Web3Controller {
         body.walletType,
       );
 
-      const tokenId = await this.web3Service.mint(operator, receiver, body.metadataUri, body.feeNumerator);
+      const tokenId = await this.web3Service.mint(operator, receiver, body.metadataUri);
+      const uniqueId = `${this.network}:${nftContractAddress}:${tokenId}`;
 
       if (!tokenId) {
         throw new Error(`Empty tokenId received, admin account used: ${adminWallet}`);
       }
 
+      const nft = await this.nftService.create({
+        tokenId: uniqueId,
+        userUuid: body.userUuid,
+        walletType: body.walletType,
+      });
+
+      if (!nft) {
+        throw new Error(`Failed to save nft in the database`);
+      }
+
       this.logger.log(
-        `NFT minted, tokenId: ${tokenId}, tokenId: ${tokenId}, ipfsUri: ${body.metadataUri}, admin account used: ${adminWallet}`,
+        `NFT minted, tokenId: ${uniqueId}, ipfsUri: ${body.metadataUri}, admin account used: ${adminWallet}`,
       );
+
+      return nft;
     } catch (err) {
       this.logger.error(err.message);
 

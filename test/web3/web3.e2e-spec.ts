@@ -68,7 +68,38 @@ describe('Web3 (e2e)', () => {
       });
   });
 
-  it('Should transfer Nft to metamsk wallet', async () => {
+  it('Should mint nft and return nft', async () => {
+    await AdminWalletFactory.getAdmin();
+
+    const userUuid = 'RIQU3JFD2YM2LDxvxGHBNtfKDw12';
+    const { address: walletAddress, privateKey } = await web3Service.createWallet();
+    await WalletFactory.createBlix({
+      userUuid,
+      walletAddress,
+      privateKey,
+    });
+
+    const nftMintData = {
+      userUuid,
+      walletType: WalletType.Blix,
+      metadataUri: 'https://ipfs.nft.storage/cef38famf8fa03mbsoi1s09f8g7f9a',
+    };
+
+    await request(app.getHttpServer())
+      .post('/api/v1/mint-nft')
+      .send(nftMintData)
+      .set('Accept', 'application/json')
+      .then((response) => {
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            userUuid: nftMintData.userUuid,
+            walletType: nftMintData.walletType,
+          }),
+        );
+      });
+  });
+
+  it('Should transfer Nft to metamask wallet', async () => {
     const admin = await AdminWalletFactory.getAdmin();
 
     const userUuid = faker.datatype.string(30);
@@ -81,7 +112,7 @@ describe('Web3 (e2e)', () => {
 
     await WalletFactory.createMetamask({ userUuid, walletAddress: metamaskAddress });
 
-    const tokenId: number = await web3Service.mint(admin.privateKey, blixWallet.walletAddress, 'metadata_uri', 500);
+    const tokenId: number = await web3Service.mint(admin.privateKey, blixWallet.walletAddress, 'metadata_uri');
 
     const { id: nftId } = await NftFactory.mintToBlixWallet({
       tokenId: `POLYGON:0x4cd7f55756ac3d4c91d315329fb27297b9f4b12c:${tokenId}`,
