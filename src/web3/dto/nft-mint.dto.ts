@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsOptional, IsString, MaxLength, MinLength, Validate } from 'class-validator';
+import { IsIn, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 import { WalletExistsByWalletTypeValidator } from '@src/wallet/validators/wallet-exists-by-wallet-type.validator';
 import { WalletType } from '@src/wallet/wallet.types';
 
@@ -21,6 +21,6 @@ export class NftMintDto {
     description: 'MetadataUri of Nft',
   })
   @IsString()
-  @IsOptional()
-  metadataUri?: string;
+  @MinLength(1)
+  metadataUri: string;
 }
