@@ -9,20 +9,20 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ApiResponseHelper } from '@src/common/helpers/api-response.helper';
-import { WalletService } from '@src/wallet/wallet.service';
+import { NftFindDto } from './dto/nft-find.dto';
 import { Nft } from './nft.entity';
 import { NftService } from './nft.service';
 
 @Controller('nft')
 export class NftController {
-  constructor(private readonly nftService: NftService, private readonly walletService: WalletService) {}
+  constructor(private readonly nftService: NftService) {}
 
   @ApiOperation({ description: `Get all nfts by userUuid` })
   @ApiResponse(ApiResponseHelper.success(Nft))
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.OK)
   @Get()
-  async findAllByUserUuid(@Query('userUuid') userUuid: string) {
-    return this.nftService.findAllByUserUuid(userUuid);
+  async findAllByUserUuid(@Query() params: NftFindDto) {
+    return this.nftService.findAllByUserUuid(params.userUuid);
   }
 }
