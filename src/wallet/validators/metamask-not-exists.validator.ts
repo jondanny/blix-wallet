@@ -24,6 +24,8 @@ export class MetamaskNotExistsValidator implements ValidatorConstraintInterface 
 
       return false;
     }
+
+    return true;
   }
 
   defaultMessage() {

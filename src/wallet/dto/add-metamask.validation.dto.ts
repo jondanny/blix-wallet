@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEthereumAddress, IsString, MaxLength, MinLength, Validate } from 'class-validator';
 import { MetamaskNotExistsValidator } from '@src/wallet/validators/metamask-not-exists.validator';
-import { WalletNotExistsByAddressValidator } from '../validators/wallet-not-exists-by-address.validator copy';
+import { WalletNotExistsByAddressValidator } from '../validators/wallet-not-exists-by-address.validator';
 
 export class AddMetamaskValidationDto {
   @ApiProperty({

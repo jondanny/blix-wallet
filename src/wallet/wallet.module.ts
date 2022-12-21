@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WalletExistsByUserUuidValidator } from './validators/wallet-exists-by-user-uuid.validator';
 import { MetamaskNotExistsValidator } from './validators/metamask-not-exists.validator';
 import { WalletNotExistsByUserUuidValidator } from './validators/wallet-not-exists-by-user-uuid.validator';
-import { WalletNotExistsByAddressValidator } from './validators/wallet-not-exists-by-address.validator copy';
+import { WalletNotExistsByAddressValidator } from './validators/wallet-not-exists-by-address.validator';
 import { Wallet } from './wallet.entity';
 import { WalletRepository } from './wallet.repository';
 import { WalletService } from './wallet.service';
