@@ -149,10 +149,16 @@ export class Web3Service {
   async mint(operator: string, receiver: string, metadataUri: string): Promise<number> {
     const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    const res = await this.sendSignedTx(nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
-      receiver,
-      metadataUri,
-    ]);
+    let res;
+
+    try {
+      res = await this.sendSignedTx(nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
+        receiver,
+        metadataUri,
+      ]);
+    } catch (err) {
+      console.log(err)
+    }
 
     if (!res) throw new Error('Failed to send signed transaction');
 
