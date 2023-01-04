@@ -141,7 +141,7 @@ export class Web3Service {
       throw new Error('Failed to transfer');
     }
 
-    console.log(`'${from}' transfered ticket #${tokenId} to '${to}'`);
+    console.log(`'${from}' transferred ticket #${tokenId} to '${to}'`);
 
     return res.txHash;
   }
