@@ -32,7 +32,12 @@
     "hardhat:deploy:nft:mumbai": "npx hardhat run hardhat/deploy/DigikraftNft.deploy.ts --network mumbai_testnet",
     "hardhat:deploy:nft:polygon": "npx hardhat run hardhat/deploy/DigikraftNft.deploy.ts --network polygon_mainnet",
     "hardhat:deploy:nft:goerli": "npx hardhat run hardhat/deploy/DigikraftNft.deploy.ts --network goerli_testnet",
-    "hardhat:verify:nft": "npx hardhat run hardhat/verify/DigikraftNft.verify.ts"
+    "hardhat:deploy:adminlist:mumbai": "npx hardhat run hardhat/deploy/DigikraftAdminList.deploy.ts --network mumbai_testnet",
+    "hardhat:deploy:adminlist:polygon": "npx hardhat run hardhat/deploy/DigikraftAdminList.deploy.ts --network polygon_mainnet",
+    "hardhat:deploy:adminlist:goerli": "npx hardhat run hardhat/deploy/DigikraftAdminList.deploy.ts --network goerli_testnet",
+    "hardhat:verify:nft": "npx hardhat run hardhat/verify/DigikraftNft.verify.ts",
+    "hardhat:verify:nft:polygon": "npx hardhat run hardhat/verify/DigikraftNft.verify.ts --network polygon_mainnet",
+    "hardhat:verify:adminlist:polygon": "npx hardhat run hardhat/verify/DigikraftAdminList.verify.ts --network polygon_mainnet"
   },
   "dependencies": {
     "@alch/alchemy-web3": "^1.4.7",
