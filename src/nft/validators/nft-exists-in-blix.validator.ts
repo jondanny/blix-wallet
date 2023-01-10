@@ -15,8 +15,8 @@ export class NftExistsInBlixValidator implements ValidatorConstraintInterface {
     this.userUuid = userUuid;
 
     const nftExists = await this.nftService.exists({ userUuid, tokenId, walletType: WalletType.Blix });
-    if (nftExists) {
-      this.errorMessage = `NftId: ${tokenId} is already added for userUuid: ${this.userUuid}`;
+    if (!nftExists) {
+      this.errorMessage = `userUuid: ${this.userUuid} does not have NftId: ${tokenId}`;
 
       return false;
     }

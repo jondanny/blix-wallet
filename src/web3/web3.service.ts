@@ -70,6 +70,8 @@ export class Web3Service {
         },
       );
 
+      if (!events.length) throw new Error('Failed to get events in the last blocks')
+
       const tokenId = events.filter((event) => event.transactionHash === txHash)[0].returnValues.tokenId;
 
       this.firstBlockNumber = await this.web3.eth.getBlockNumber();
@@ -149,16 +151,10 @@ export class Web3Service {
   async mint(operator: string, receiver: string, metadataUri: string): Promise<number> {
     const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    let res;
-
-    try {
-      res = await this.sendSignedTx(nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
-        receiver,
-        metadataUri,
-      ]);
-    } catch (err) {
-      console.log(err)
-    }
+    const res = await this.sendSignedTx(nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
+      receiver,
+      metadataUri,
+    ]);
 
     if (!res) throw new Error('Failed to send signed transaction');
 
