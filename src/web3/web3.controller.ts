@@ -89,9 +89,6 @@ export class Web3Controller {
         walletAddress: adminWallet,
       } = await this.adminWalletService.findFreeAndSetInUse();
 
-      console.log("DEBUG STEP POINT ONE");
-      console.log("Operator:", operator, "ADMIN WALLET:", adminWallet, "ID:", id);
-
       if (!id) {
         throw new Error(`No free admin wallet is available`);
       }
@@ -102,15 +99,8 @@ export class Web3Controller {
         body.userUuid,
         body.walletType,
       );
-
-      console.log("DEBUG STEP POINT TWO");
-      console.log("WALLET ADDRESS:", receiver);
-
       const tokenId = await this.web3Service.mint(operator, receiver, body.metadataUri);
       const uniqueId = `${this.network}:${nftContractAddress}:${tokenId}`;
-
-      console.log("DEBUG STEP POINT THREE");
-      console.log("TOKEN ID", tokenId);
 
       if (!tokenId) {
         throw new Error(`Empty tokenId received, admin account used: ${adminWallet}`);
@@ -121,9 +111,6 @@ export class Web3Controller {
         userUuid: body.userUuid,
         walletType: body.walletType,
       });
-
-      console.log("DEBUG STEP POINT FOUR");
-      console.log("NFT", nft);
 
       if (!nft) {
         throw new Error(`Failed to save nft in the database`);

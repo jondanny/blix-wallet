@@ -20,6 +20,10 @@ export class NftService {
     return this.nftRepository.findOneBy({ tokenId });
   }
 
+  async exists(param: Partial<Nft>): Promise<boolean> {
+    return this.nftRepository.exists(param);
+  }
+
   async findAllByUserUuid(userUuid: string): Promise<Nft[]> {
     return this.nftRepository.find({ where: { userUuid } });
   }
