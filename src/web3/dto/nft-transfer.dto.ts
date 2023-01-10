@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { WalletExistsByUserUuidValidator } from '../../wallet/validators/wallet-exists-by-user-uuid.validator';
 import { IsString, MaxLength, MinLength, Validate } from 'class-validator';
+import { NftExistsInBlixValidator } from '@src/nft/validators/nft-exists-in-blix.validator';
 
 export class NftTransferDto {
   @ApiProperty({ example: 'RIQU3JFD2YM2LDxvxGHBNtfKDw12', required: true, description: 'Uuid of Nft sender' })
@@ -18,5 +19,6 @@ export class NftTransferDto {
   @IsString()
   @MinLength(1)
   @MaxLength(64)
+  @Validate(NftExistsInBlixValidator)
   tokenId: string;
 }
