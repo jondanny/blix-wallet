@@ -70,7 +70,7 @@ export class Web3Service {
         },
       );
 
-      if (!events.length) throw new Error('Failed to get events in the last blocks')
+      if (!events.length) throw new Error('Failed to get events in the last blocks');
 
       const tokenId = events.filter((event) => event.transactionHash === txHash)[0].returnValues.tokenId;
 
