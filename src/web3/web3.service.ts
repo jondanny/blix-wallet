@@ -58,12 +58,14 @@ export class Web3Service {
         data: txnData,
       });
 
+      const gasPrice = await this.web3.eth.getGasPrice();
+
       const signedTransaction = await this.web3.eth.accounts.signTransaction(
         {
           to: contractAddress,
           from: callerAccount.address,
           gas: estimatedGas,
-          gasPrice: 100000000000,
+          gasPrice,
           data: txnData,
         },
         callerAccount.privateKey,
@@ -127,12 +129,14 @@ export class Web3Service {
 
   async transferMatic(privateKey: string, from: string, to: string, amount: number): Promise<string> {
     try {
+      const gasPrice = await this.web3.eth.getGasPrice();
+
       const signedTransaction = await this.web3.eth.accounts.signTransaction(
         {
           to,
           from,
           gas: 21000,
-          gasPrice: 50000000000,
+          gasPrice,
           value: amount * 10 ** 18,
         },
         privateKey,
