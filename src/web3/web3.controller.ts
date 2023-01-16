@@ -21,7 +21,9 @@ import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 import { WalletType } from '@src/wallet/wallet.types';
 import { AdminWalletService } from '@src/admin-wallet/admin-wallet.service';
 import { NftMintDto } from './dto/nft-mint.dto';
-import { nftContractAddress } from '@hardhat/config/contracts';
+import { nftContractAddress } from '@hardhat/config/production/contracts';
+import { AdminWalletUsage } from '@src/admin-wallet/admin-wallet.types';
+import { CreateAdminDto } from './dto/create-admin.dto';
 
 @Controller()
 export class Web3Controller {
@@ -190,5 +192,22 @@ export class Web3Controller {
     } finally {
       await this.adminWalletService.setNotInUse(adminWalletId);
     }
+  }
+
+  @ApiOperation({ description: `Create an admin wallet and send 5 Matic` })
+  @ApiResponse(ApiResponseHelper.created())
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.CREATED)
+  @Post('create-admin')
+  async createAdmin(@Body() body: CreateAdminDto) {
+    const { address, privateKey } = await this.web3Service.createAdmin(body.amount);
+
+    const adminWallet = await this.adminWalletService.create({
+      walletAddress: address,
+      privateKey: privateKey.slice(2),
+      inUse: AdminWalletUsage.NotInUse,
+    });
+
+    return adminWallet;
   }
 }

@@ -6,7 +6,7 @@ export const Web3Provider = {
   provide: WEB3_PROVIDER_TOKEN,
   useFactory: async (configService: ConfigService): Promise<AlchemyWeb3> =>
     createAlchemyWeb3(
-      alchemyUrl(configService.get('web3Config.testnetApiUrl'), configService.get('web3Config.alchemyApiKey')),
+      alchemyUrl(configService.get('web3Config.providerUrl'), configService.get('web3Config.alchemyApiKey')),
       {
         writeProvider: null,
       },

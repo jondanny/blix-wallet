@@ -1,9 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AbiItem } from 'web3-utils';
 import { Wallet } from './types/wallet.interface';
 import { WEB3_PROVIDER_TOKEN } from './web3.types';
 import { digikraftNftContractAbi } from './abi/digikraftNftContractAbi';
-import { nftContractAddress } from '@hardhat/config/contracts';
+import { digikraftAdminListContractAbi } from './abi/digikraftAdminListContractAbi';
 
 export interface txReturnProps {
   txHash?: string;
@@ -13,10 +14,28 @@ export interface txReturnProps {
 @Injectable()
 export class Web3Service {
   public digikraftNftContract;
+  public digikraftAdminListContract;
   private firstBlockNumber;
+  private nftContractAddress;
+  private adminListContractAddress;
+  private superAdminAccount;
 
-  constructor(@Inject(WEB3_PROVIDER_TOKEN) public web3) {
-    this.digikraftNftContract = new this.web3.eth.Contract(digikraftNftContractAbi as AbiItem[], nftContractAddress);
+  constructor(@Inject(WEB3_PROVIDER_TOKEN) public web3, private readonly configService: ConfigService) {
+    this.nftContractAddress = configService.get('web3Config.nftContractAddress');
+    this.adminListContractAddress = configService.get('web3Config.adminListContractAddress');
+    this.superAdminAccount = this.web3.eth.accounts.privateKeyToAccount(
+      this.configService.get('web3Config.privateKey'),
+    );
+
+    this.digikraftNftContract = new this.web3.eth.Contract(
+      digikraftNftContractAbi as AbiItem[],
+      this.nftContractAddress,
+    );
+
+    this.digikraftAdminListContract = new this.web3.eth.Contract(
+      digikraftAdminListContractAbi as AbiItem[],
+      this.adminListContractAddress,
+    );
 
     this.web3.eth.getBlockNumber().then((res) => {
       this.firstBlockNumber = res;
@@ -57,22 +76,26 @@ export class Web3Service {
         txHash = hash;
       });
 
-      const events = await contract.getPastEvents(
-        'Transfer',
-        {
-          fromBlock: this.firstBlockNumber,
-          toBlock: 'latest',
-        },
-        (err) => {
-          if (err) {
-            throw new Error('Failed to get events among the given blocks');
-          }
-        },
-      );
+      let tokenId;
 
-      if (!events.length) throw new Error('Failed to get events in the last blocks');
+      if (func === 'mint' || func === 'transfer') {
+        const events = await contract.getPastEvents(
+          'Transfer',
+          {
+            fromBlock: this.firstBlockNumber,
+            toBlock: 'latest',
+          },
+          (err) => {
+            if (err) {
+              throw new Error('Failed to get events among the given blocks');
+            }
+          },
+        );
 
-      const tokenId = events.filter((event) => event.transactionHash === txHash)[0].returnValues.tokenId;
+        if (!events.length) throw new Error('Failed to get events in the last blocks');
+
+        tokenId = events.filter((event) => event.transactionHash === txHash)[0].returnValues.tokenId;
+      }
 
       this.firstBlockNumber = await this.web3.eth.getBlockNumber();
 
@@ -131,7 +154,7 @@ export class Web3Service {
   async transferNft(operator: string, from: string, to: string, tokenId: number): Promise<string> {
     const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    const res = await this.sendSignedTx(nftContractAddress, this.digikraftNftContract, adminAccount, 'transfer', [
+    const res = await this.sendSignedTx(this.nftContractAddress, this.digikraftNftContract, adminAccount, 'transfer', [
       from,
       to,
       tokenId,
@@ -151,7 +174,7 @@ export class Web3Service {
   async mint(operator: string, receiver: string, metadataUri: string): Promise<number> {
     const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    const res = await this.sendSignedTx(nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
+    const res = await this.sendSignedTx(this.nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
       receiver,
       metadataUri,
     ]);
@@ -159,5 +182,43 @@ export class Web3Service {
     if (!res) throw new Error('Failed to send signed transaction');
 
     return parseInt(res.tokenId);
+  }
+
+  async createAdmin(amount: number): Promise<Partial<Wallet>> {
+    const wallet: Wallet = await this.web3.eth.accounts.create();
+
+    const res = await this.sendSignedTx(
+      this.adminListContractAddress,
+      this.digikraftAdminListContract,
+      this.superAdminAccount,
+      'addAdmin',
+      [wallet.address],
+    );
+
+    if (!res) throw new Error('Failed to set admin');
+
+    console.log(`Create and grant admin role to "${wallet.address}"`);
+
+    await this.transferMatic(this.superAdminAccount.privateKey, this.superAdminAccount.address, wallet.address, amount);
+
+    console.log(`Sent ${amount} Matic to "${wallet.address}"`);
+
+    return { address: wallet.address, privateKey: wallet.privateKey };
+  }
+
+  async removeAdmin(address: string): Promise<string> {
+    const res = await this.sendSignedTx(
+      this.adminListContractAddress,
+      this.digikraftAdminListContract,
+      this.superAdminAccount,
+      'removeAdmin',
+      [address],
+    );
+
+    if (!res) throw new Error('Failed to remove admin');
+
+    console.log(`Removed admin role from "${address}"`);
+
+    return res.txHash;
   }
 }

@@ -12,7 +12,7 @@
     "start": "node dist/src/main",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/src/main",
+    "start:prod": "NODE_ENV=production nest start --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest --maxWorkers=1 --forceExit",
     "test:watch": "jest --watch",
@@ -35,8 +35,9 @@
     "hardhat:deploy:adminlist:mumbai": "npx hardhat run hardhat/deploy/DigikraftAdminList.deploy.ts --network mumbai_testnet",
     "hardhat:deploy:adminlist:polygon": "npx hardhat run hardhat/deploy/DigikraftAdminList.deploy.ts --network polygon_mainnet",
     "hardhat:deploy:adminlist:goerli": "npx hardhat run hardhat/deploy/DigikraftAdminList.deploy.ts --network goerli_testnet",
-    "hardhat:verify:nft": "npx hardhat run hardhat/verify/DigikraftNft.verify.ts",
+    "hardhat:verify:nft:numbai": "npx hardhat run hardhat/verify/DigikraftNft.verify.ts --network mumbai_testnet",
     "hardhat:verify:nft:polygon": "npx hardhat run hardhat/verify/DigikraftNft.verify.ts --network polygon_mainnet",
+    "hardhat:verify:adminlist:mumbai": "npx hardhat run hardhat/verify/DigikraftAdminList.verify.ts --network mumbai_testnet",
     "hardhat:verify:adminlist:polygon": "npx hardhat run hardhat/verify/DigikraftAdminList.verify.ts --network polygon_mainnet"
   },
   "dependencies": {

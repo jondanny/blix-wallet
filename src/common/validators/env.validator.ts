@@ -56,7 +56,7 @@ class EnvironmentVariables {
 
   @IsString()
   @MinLength(1)
-  TESTNET_API_URL: string;
+  PROVIDER_URL: string;
 
   @IsString()
   @MinLength(1)

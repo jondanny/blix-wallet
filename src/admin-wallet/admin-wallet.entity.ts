@@ -1,4 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, DeleteDateColumn } from 'typeorm';
+import { AdminWalletUsage } from './admin-wallet.types';
 
 @Entity('admin_wallet')
 export class AdminWallet {
@@ -12,7 +13,7 @@ export class AdminWallet {
   privateKey: string;
 
   @Column({ nullable: false })
-  inUse: number;
+  inUse: AdminWalletUsage;
 
   @Column({ type: 'datetime', nullable: false })
   createdAt: Date;

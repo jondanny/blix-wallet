@@ -1,11 +1,16 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { AdminWalletUsage } from '../admin-wallet.types';
 
 export class AdminWalletCreateValidationDto {
   @IsNotEmpty()
   @IsString()
-  address: string;
+  walletAddress: string;
 
   @IsNotEmpty()
   @IsString()
   privateKey: string;
+
+  @IsNotEmpty()
+  @IsIn(['NotInUse', 'InUse'])
+  inUse: AdminWalletUsage;
 }

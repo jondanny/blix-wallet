@@ -1,6 +1,6 @@
 import { run } from 'hardhat';
 
-import { adminListContractAddress } from '../config/contracts';
+import { adminListContractAddress } from '../config/production/contracts';
 
 async function main() {
   await run('verify:verify', {

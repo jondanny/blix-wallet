@@ -1,6 +1,6 @@
 import { run } from 'hardhat';
 
-import { nftContractAddress, adminListContractAddress } from '../config/contracts';
+import { nftContractAddress, adminListContractAddress } from '../config/production/contracts';
 
 async function main() {
   await run('verify:verify', {

@@ -1,6 +1,5 @@
 import { ethers } from 'hardhat';
-
-import writeConfig from '../config/write-config';
+import writeConfig from '../utils/write-config';
 
 async function main() {
   const DigikraftAdminList = await ethers.getContractFactory('DigikraftAdminList');
