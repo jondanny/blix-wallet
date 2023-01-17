@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { Web3Service } from './web3.service';
 import { WalletService } from '@src/wallet/wallet.service';
 import { NftTransferDto } from './dto/nft-transfer.dto';
@@ -21,7 +23,6 @@ import { ApiResponseHelper } from '../common/helpers/api-response.helper';
 import { WalletType } from '@src/wallet/wallet.types';
 import { AdminWalletService } from '@src/admin-wallet/admin-wallet.service';
 import { NftMintDto } from './dto/nft-mint.dto';
-import { nftContractAddress } from '@hardhat/config/production/contracts';
 import { AdminWalletUsage } from '@src/admin-wallet/admin-wallet.types';
 import { CreateAdminDto } from './dto/create-admin.dto';
 
@@ -36,6 +37,7 @@ export class Web3Controller {
     private readonly nftService: NftService,
     private readonly adminWalletService: AdminWalletService,
     private readonly configService: ConfigService,
+    @InjectQueue('web3-queue') private queue: Queue,
   ) {
     this.network = this.configService.get('web3Config.network');
   }
@@ -82,54 +84,7 @@ export class Web3Controller {
   @HttpCode(HttpStatus.CREATED)
   @Post('mint-nft')
   async mintNft(@Body() body: NftMintDto) {
-    let adminWalletId = 0;
-
-    try {
-      const {
-        id,
-        privateKey: operator,
-        walletAddress: adminWallet,
-      } = await this.adminWalletService.findFreeAndSetInUse();
-
-      if (!id) {
-        throw new Error(`No free admin wallet is available`);
-      }
-
-      adminWalletId = id;
-
-      const { walletAddress: receiver } = await this.walletService.findByUserUuidAndType(
-        body.userUuid,
-        body.walletType,
-      );
-      const tokenId = await this.web3Service.mint(operator, receiver, body.metadataUri);
-      const uniqueId = `${this.network}:${nftContractAddress}:${tokenId}`;
-
-      if (!tokenId) {
-        throw new Error(`Empty tokenId received, admin account used: ${adminWallet}`);
-      }
-
-      const nft = await this.nftService.create({
-        tokenId: uniqueId,
-        userUuid: body.userUuid,
-        walletType: body.walletType,
-      });
-
-      if (!nft) {
-        throw new Error(`Failed to save nft in the database`);
-      }
-
-      this.logger.log(
-        `NFT minted, tokenId: ${uniqueId}, ipfsUri: ${body.metadataUri}, admin account used: ${adminWallet}`,
-      );
-
-      return nft;
-    } catch (err) {
-      this.logger.error(err.message);
-
-      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    } finally {
-      await this.adminWalletService.setNotInUse(adminWalletId);
-    }
+    await this.queue.add('web3-mint-job', { body: body });
   }
 
   @ApiOperation({ description: `Transfer NFT to user's external metamask wallet` })
@@ -207,6 +162,8 @@ export class Web3Controller {
       privateKey: privateKey.slice(2),
       inUse: AdminWalletUsage.NotInUse,
     });
+
+    this.logger.log(`Admin account "${address}" is created. Matic balance: ${body.amount}`);
 
     return adminWallet;
   }
