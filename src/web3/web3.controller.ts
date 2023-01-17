@@ -33,7 +33,7 @@ export class Web3Controller {
     private readonly walletService: WalletService,
     private readonly adminWalletService: AdminWalletService,
     @InjectQueue('web3-queue') private queue: Queue,
-  ) {}
+  ) { }
 
   @ApiOperation({ description: `Create wallet for a user` })
   @ApiResponse(ApiResponseHelper.created())
@@ -77,7 +77,9 @@ export class Web3Controller {
   @HttpCode(HttpStatus.CREATED)
   @Post('mint-nft')
   async mintNft(@Body() body: NftMintDto) {
-    await this.queue.add('web3-mint-job', { body });
+    let job = await this.queue.add('web3-mint-job', { body });
+
+    console.log(job)
   }
 
   @ApiOperation({ description: `Transfer NFT to user's external metamask wallet` })
