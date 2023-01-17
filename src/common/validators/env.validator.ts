@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsIn, IsInt, IsString, Min, MinLength, validateSync } from 'class-validator';
+import { IsEnum, IsIn, IsInt, IsString, Max, Min, MinLength, validateSync } from 'class-validator';
 
 export enum Environment {
   Development = 'development',
@@ -69,6 +69,26 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   NETWORK: string;
+
+  @IsString()
+  @MinLength(1)
+  REDIS_HOST: string;
+
+  @IsInt()
+  @Min(1)
+  @Max(65536)
+  REDIS_PORT: number;
+
+  @IsIn(['true', 'false'])
+  REDIS_TLS: string;
+
+  @IsString()
+  @MinLength(1)
+  REDIS_USERNAME: string;
+
+  @IsString()
+  @MinLength(1)
+  REDIS_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {
