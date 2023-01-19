@@ -88,7 +88,7 @@ export class Web3Service {
       });
 
       const maticBalance = await this.getMaticBalance(callerAccount.address);
-      if (maticBalance < 5) {
+      if (maticBalance < 0.1) {
         await this.adminWalletService.setBalanceOutOfMatic(callerAccount.address);
 
         await this.web3Queue.add(Web3QueueActions.RefillMatic, {

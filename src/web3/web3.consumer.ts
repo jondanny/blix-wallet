@@ -157,7 +157,7 @@ export class Web3Consumer {
     const { body } = job.data;
 
     try {
-      await this.web3Service.transferMatic(body.sender.privateKey, body.sender.address, body.receiver.address, 0.1);
+      await this.web3Service.transferMatic(body.sender.privateKey, body.sender.address, body.receiver.address, 3);
 
       await this.adminWalletService.setBalanceEnough(body.receiver.address);
 
