@@ -89,6 +89,10 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   REDIS_PASSWORD: string;
+
+  @IsString()
+  @MinLength(1)
+  ADMIN_API_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {

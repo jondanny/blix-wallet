@@ -29,6 +29,7 @@ export class Web3Controller {
   private readonly logger = new Logger(Web3Controller.name);
   private nftContractAddress;
   private network;
+  private adminApiPassword;
 
   constructor(
     private readonly web3Service: Web3Service,
@@ -39,6 +40,7 @@ export class Web3Controller {
   ) {
     this.network = this.configService.get('web3Config.network');
     this.nftContractAddress = this.configService.get('web3Config.nftContractAddress');
+    this.adminApiPassword = this.configService.get('appConfig.adminApiPassword');
   }
 
   @ApiOperation({ description: `Create wallet for a user` })
@@ -195,12 +197,15 @@ export class Web3Controller {
     }
   }
 
-  @ApiOperation({ description: `Create an admin wallet and send 5 Matic` })
+  @ApiOperation({ description: `Create an admin wallet and send initial Matic` })
   @ApiResponse(ApiResponseHelper.created())
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.CREATED)
   @Post('create-admin')
   async createAdmin(@Body() body: CreateAdminDto) {
+    if (body.password !== this.adminApiPassword)
+      throw new HttpException('Admin authentication failed', HttpStatus.BAD_REQUEST);
+
     const { address, privateKey } = await this.web3Service.createAdmin(body.amount);
 
     const adminWallet = await this.adminWalletService.create({
