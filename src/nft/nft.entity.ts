@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, DeleteDateColumn } from 'typeorm';
 import { WalletType } from '@src/wallet/wallet.types';
 
 @Entity('nft')
@@ -26,4 +26,8 @@ export class Nft {
   @ApiProperty({ description: 'Updated at date' })
   @Column({ type: 'datetime', nullable: false })
   updatedAt: Date;
+
+  @ApiProperty({ description: 'Deleted at date' })
+  @DeleteDateColumn({ type: 'datetime', nullable: true })
+  deletedAt: Date;
 }

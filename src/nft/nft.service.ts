@@ -8,7 +8,7 @@ import { NftRepository } from './nft.repository';
 export class NftService {
   constructor(private readonly nftRepository: NftRepository) {}
 
-  async create(data: NftCreateDto): Promise<Nft> {
+  async save(data: NftCreateDto): Promise<Nft> {
     return await this.nftRepository.save(data);
   }
 

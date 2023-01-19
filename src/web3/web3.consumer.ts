@@ -41,7 +41,7 @@ export class Web3Consumer {
 
   @Process('web3-mint-job')
   async mint(job: Job<any>) {
-    const { body } = job.data;
+    const { body, nftId } = job.data;
 
     let adminWalletId = 0;
 
@@ -69,11 +69,12 @@ export class Web3Consumer {
         throw new Error(`Empty tokenId received, admin account used: ${adminWallet}`);
       }
 
-      const nft = await this.nftService.create({
+      const nft = await this.nftService.save({
+        id: nftId,
         tokenId: uniqueId,
-        userUuid: body.userUuid,
-        walletType: body.walletType,
       });
+
+      console.log('nft minted stored:', nft);
 
       if (!nft) {
         throw new Error(`Failed to save nft in the database`);
@@ -82,10 +83,9 @@ export class Web3Consumer {
       this.logger.log(
         `NFT minted, tokenId: ${uniqueId}, ipfsUri: ${body.metadataUri}, admin account used: ${adminWallet}`,
       );
-
-      return nft;
     } catch (err) {
       this.logger.error(err.message);
+      await this.nftService.remove(nftId);
 
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     } finally {

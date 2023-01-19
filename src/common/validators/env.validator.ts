@@ -83,7 +83,7 @@ class EnvironmentVariables {
   REDIS_TLS: string;
 
   @IsString()
-  @MinLength(1)
+  @MinLength(0)
   REDIS_USERNAME: string;
 
   @IsString()

@@ -23,6 +23,8 @@ import { AdminWalletService } from '@src/admin-wallet/admin-wallet.service';
 import { NftMintDto } from './dto/nft-mint.dto';
 import { AdminWalletUsage } from '@src/admin-wallet/admin-wallet.types';
 import { CreateAdminDto } from './dto/create-admin.dto';
+import { NftService } from '@src/nft/nft.service';
+import { wait } from '@src/common/utils/wait';
 
 @Controller()
 export class Web3Controller {
@@ -30,10 +32,11 @@ export class Web3Controller {
 
   constructor(
     private readonly web3Service: Web3Service,
+    private readonly nftService: NftService,
     private readonly walletService: WalletService,
     private readonly adminWalletService: AdminWalletService,
     @InjectQueue('web3-queue') private queue: Queue,
-  ) { }
+  ) {}
 
   @ApiOperation({ description: `Create wallet for a user` })
   @ApiResponse(ApiResponseHelper.created())
@@ -77,9 +80,32 @@ export class Web3Controller {
   @HttpCode(HttpStatus.CREATED)
   @Post('mint-nft')
   async mintNft(@Body() body: NftMintDto) {
-    let job = await this.queue.add('web3-mint-job', { body });
+    const RETRY_COUNT = 5;
 
-    console.log(job)
+    const nft = await this.nftService.save({
+      tokenId: 'pending',
+      userUuid: body.userUuid,
+      walletType: body.walletType,
+    });
+
+    await this.queue.add('web3-mint-job', { body, nftId: nft.id });
+
+    await wait(5000);
+
+    for (let i = 0; i < RETRY_COUNT; i++) {
+      const mintedNft = await this.nftService.findOne(nft.id);
+      if (mintedNft.tokenId === 'pending') {
+        if (i === RETRY_COUNT - 1) {
+          await this.nftService.remove(nft.id);
+          continue;
+        } else {
+          await wait(2000);
+          continue;
+        }
+      } else {
+        return mintedNft;
+      }
+    }
   }
 
   @ApiOperation({ description: `Transfer NFT to user's external metamask wallet` })
