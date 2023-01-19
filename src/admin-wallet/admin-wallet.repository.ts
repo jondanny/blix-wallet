@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { AdminWallet } from './admin-wallet.entity';
-import { AdminWalletUsage } from './admin-wallet.types';
+import { AdminWalletUsage, BalanceStatus } from './admin-wallet.types';
 
 @Injectable()
 export class AdminWalletRepository extends Repository<AdminWallet> {
@@ -9,7 +9,7 @@ export class AdminWalletRepository extends Repository<AdminWallet> {
     super(AdminWallet, dataSource.manager);
   }
 
-  async findFreeAndSetInUse() {
+  async findFreeEnoughAndSetInUse() {
     const queryRunner = this.dataSource.createQueryRunner();
 
     try {
@@ -19,7 +19,7 @@ export class AdminWalletRepository extends Repository<AdminWallet> {
       const adminWallet = await queryRunner.manager
         .createQueryBuilder(AdminWallet, 'admin_wallet')
         .setLock('pessimistic_write')
-        .where({ inUse: AdminWalletUsage.NotInUse })
+        .where({ inUse: AdminWalletUsage.NotInUse, balance: BalanceStatus.Enough })
         .orderBy('RAND()')
         .getOne();
 

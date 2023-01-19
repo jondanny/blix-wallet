@@ -1,10 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AbiItem } from 'web3-utils';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { Wallet } from './types/wallet.interface';
 import { WEB3_PROVIDER_TOKEN } from './web3.types';
 import { digikraftNftContractAbi } from './abi/digikraftNftContractAbi';
 import { digikraftAdminListContractAbi } from './abi/digikraftAdminListContractAbi';
+import { WEB3_QUEUE, Web3QueueActions } from './web3.types';
+import { AdminWalletService } from '@src/admin-wallet/admin-wallet.service';
 
 export interface txReturnProps {
   txHash?: string;
@@ -20,7 +24,12 @@ export class Web3Service {
   private adminListContractAddress;
   private superAdminAccount;
 
-  constructor(@Inject(WEB3_PROVIDER_TOKEN) public web3, private readonly configService: ConfigService) {
+  constructor(
+    @Inject(WEB3_PROVIDER_TOKEN) public web3,
+    private readonly configService: ConfigService,
+    private readonly adminWalletService: AdminWalletService,
+    @InjectQueue(WEB3_QUEUE) private web3Queue: Queue,
+  ) {
     this.nftContractAddress = configService.get('web3Config.nftContractAddress');
     this.adminListContractAddress = configService.get('web3Config.adminListContractAddress');
     this.superAdminAccount = this.web3.eth.accounts.privateKeyToAccount(
@@ -77,6 +86,15 @@ export class Web3Service {
         console.log('txHash:', hash);
         txHash = hash;
       });
+
+      const maticBalance = await this.getMaticBalance(callerAccount.address);
+      if (maticBalance < 5) {
+        await this.adminWalletService.setBalanceOutOfMatic(callerAccount.address);
+
+        await this.web3Queue.add(Web3QueueActions.RefillMatic, {
+          body: { sender: this.superAdminAccount, receiver: callerAccount },
+        });
+      }
 
       let tokenId;
 

@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, DeleteDateColumn } from 'typeorm';
-import { AdminWalletUsage } from './admin-wallet.types';
+import { AdminWalletUsage, BalanceStatus } from './admin-wallet.types';
 
 @Entity('admin_wallet')
 export class AdminWallet {
@@ -14,6 +14,9 @@ export class AdminWallet {
 
   @Column({ nullable: false })
   inUse: AdminWalletUsage;
+
+  @Column({ nullable: false })
+  balance: BalanceStatus;
 
   @Column({ type: 'datetime', nullable: false })
   createdAt: Date;

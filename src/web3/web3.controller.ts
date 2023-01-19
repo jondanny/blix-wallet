@@ -92,7 +92,7 @@ export class Web3Controller {
         id,
         privateKey: operator,
         walletAddress: adminWallet,
-      } = await this.adminWalletService.findFreeAndSetInUse();
+      } = await this.adminWalletService.findFreeEnoughAndSetInUse();
 
       if (!id) {
         throw new Error(`No free admin wallet is available`);
@@ -148,7 +148,7 @@ export class Web3Controller {
         id,
         privateKey: operator,
         walletAddress: adminWallet,
-      } = await this.adminWalletService.findFreeAndSetInUse();
+      } = await this.adminWalletService.findFreeEnoughAndSetInUse();
 
       if (!id) {
         throw new Error(`No free admin wallet is available`);

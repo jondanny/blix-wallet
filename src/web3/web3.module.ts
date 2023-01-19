@@ -8,6 +8,7 @@ import { NftModule } from '@src/nft/nft.module';
 import { Web3Controller } from './web3.controller';
 import { AdminWalletModule } from '@src/admin-wallet/admin-wallet.module';
 import { Web3Consumer } from './web3.consumer';
+import { WEB3_QUEUE } from './web3.types';
 
 @Module({
   imports: [
@@ -15,8 +16,8 @@ import { Web3Consumer } from './web3.consumer';
     NftModule,
     AdminWalletModule,
     BullModule.registerQueue({
-      name: 'web3-queue',
-      processors: [join(__dirname, 'processor.js')],
+      name: WEB3_QUEUE,
+      processors: [join(__dirname, 'processor')],
     }),
   ],
   providers: [Web3Service, Web3Consumer, Web3Provider],

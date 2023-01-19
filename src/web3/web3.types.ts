@@ -11,3 +11,16 @@ export enum Web3EventPattern {
   NftBurn = 'web3.nft.burn',
   NftBurnReply = 'web3.nft.burn.reply',
 }
+
+export enum Web3QueueActions {
+  Mint = 'mint',
+  Transfer = 'transfer',
+  RefillMatic = 'refill-matic',
+}
+
+export const WEB3_QUEUE = 'web3-queue';
+
+export interface SyncJobBody {
+  id: number;
+  body?: any;
+}

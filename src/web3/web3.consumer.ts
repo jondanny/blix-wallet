@@ -7,8 +7,9 @@ import { NftService } from '@src/nft/nft.service';
 import { WalletService } from '@src/wallet/wallet.service';
 import { Job } from 'bull';
 import { Web3Service } from './web3.service';
+import { WEB3_QUEUE, Web3QueueActions, SyncJobBody } from './web3.types';
 
-@Processor('web3-queue')
+@Processor(WEB3_QUEUE)
 export class Web3Consumer {
   private network;
 
@@ -26,22 +27,22 @@ export class Web3Consumer {
 
   @OnQueueActive()
   onActive(job: Job) {
-    this.logger.debug(`Processing job ${job.id} of type ${job.name} with data ${job.data}...`);
+    this.logger.debug(`Processing job ${job.id} of type ${job.name} with data ${JSON.stringify(job.data)}...`);
   }
 
   @OnQueueStalled()
   onStalled(job: Job) {
-    this.logger.debug(`Stalled job ${job.id} of type ${job.name} with data ${job.data}...`);
+    this.logger.debug(`Stalled job ${job.id} of type ${job.name} with data ${JSON.stringify(job.data)}...`);
   }
 
   @OnQueueError()
   onError(job: Job) {
-    this.logger.debug(`Processing job failed ${job.id} of type ${job.name} with data ${job.data}...`);
+    this.logger.debug(`Processing job failed ${job.id} of type ${job.name} with data ${JSON.stringify(job.data)}...`);
   }
 
-  @Process('web3-mint-job')
-  async mint(job: Job<any>) {
-    const { body, nftId } = job.data;
+  @Process(Web3QueueActions.Mint)
+  async mint(job: Job<SyncJobBody>) {
+    const { body } = job.data;
 
     let adminWalletId = 0;
 
@@ -50,7 +51,7 @@ export class Web3Consumer {
         id,
         privateKey: operator,
         walletAddress: adminWallet,
-      } = await this.adminWalletService.findFreeAndSetInUse();
+      } = await this.adminWalletService.findFreeEnoughAndSetInUse();
 
       if (!id) {
         throw new Error(`No free admin wallet is available`);
@@ -70,11 +71,9 @@ export class Web3Consumer {
       }
 
       const nft = await this.nftService.save({
-        id: nftId,
+        id: body.nftId,
         tokenId: uniqueId,
       });
-
-      console.log('nft minted stored:', nft);
 
       if (!nft) {
         throw new Error(`Failed to save nft in the database`);
@@ -85,7 +84,7 @@ export class Web3Consumer {
       );
     } catch (err) {
       this.logger.error(err.message);
-      await this.nftService.remove(nftId);
+      await this.nftService.remove(body.nftId);
 
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     } finally {
@@ -93,8 +92,8 @@ export class Web3Consumer {
     }
   }
 
-  @Process('web3-transfer-job')
-  async transferToMetamask(job: Job<any>) {
+  @Process(Web3QueueActions.Transfer)
+  async transferToMetamask(job: Job<SyncJobBody>) {
     const { body } = job.data;
 
     let adminWalletId = 0;
@@ -104,7 +103,7 @@ export class Web3Consumer {
         id,
         privateKey: operator,
         walletAddress: adminWallet,
-      } = await this.adminWalletService.findFreeAndSetInUse();
+      } = await this.adminWalletService.findFreeEnoughAndSetInUse();
 
       if (!id) {
         throw new Error(`No free admin wallet is available`);
@@ -150,6 +149,23 @@ export class Web3Consumer {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     } finally {
       await this.adminWalletService.setNotInUse(adminWalletId);
+    }
+  }
+
+  @Process(Web3QueueActions.RefillMatic)
+  async refillMatic(job: Job<SyncJobBody>) {
+    const { body } = job.data;
+
+    try {
+      await this.web3Service.transferMatic(body.sender.privateKey, body.sender.address, body.receiver.address, 0.1);
+
+      await this.adminWalletService.setBalanceEnough(body.receiver.address);
+
+      this.logger.log(`Account "${body.receiver.address}" balance is refilled up to 3 Matics`);
+    } catch (err) {
+      this.logger.error(err.message);
+
+      throw err;
     }
   }
 }

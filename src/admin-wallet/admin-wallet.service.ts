@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AdminWalletRepository } from './admin-wallet.repository';
 import { AdminWalletCreateValidationDto } from './dto/admin-wallet.create.validation.dto';
 import { AdminWallet } from './admin-wallet.entity';
-import { AdminWalletUsage } from './admin-wallet.types';
+import { AdminWalletUsage, BalanceStatus } from './admin-wallet.types';
 
 @Injectable()
 export class AdminWalletService {
@@ -16,7 +16,15 @@ export class AdminWalletService {
     await this.adminWalletRepository.update(id, { inUse: AdminWalletUsage.NotInUse });
   }
 
-  async findFreeAndSetInUse(): Promise<AdminWallet> {
-    return this.adminWalletRepository.findFreeAndSetInUse();
+  async findFreeEnoughAndSetInUse(): Promise<AdminWallet> {
+    return this.adminWalletRepository.findFreeEnoughAndSetInUse();
+  }
+
+  async setBalanceOutOfMatic(walletAddress: string) {
+    await this.adminWalletRepository.update({ walletAddress }, { balance: BalanceStatus.OutOfMatic });
+  }
+
+  async setBalanceEnough(walletAddress: string) {
+    await this.adminWalletRepository.update({ walletAddress }, { balance: BalanceStatus.Enough });
   }
 }
