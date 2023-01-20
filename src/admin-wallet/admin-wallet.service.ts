@@ -20,11 +20,11 @@ export class AdminWalletService {
     return this.adminWalletRepository.findFreeEnoughAndSetInUse();
   }
 
-  // async setBalanceOutOfMatic(walletAddress: string) {
-  //   await this.adminWalletRepository.update({ walletAddress }, { balance: BalanceStatus.OutOfMatic });
-  // }
+  async setBalanceOutOfMatic(walletAddress: string) {
+    await this.adminWalletRepository.update({ walletAddress }, { balance: BalanceStatus.OutOfMatic });
+  }
 
-  // async setBalanceEnough(walletAddress: string) {
-  //   await this.adminWalletRepository.update({ walletAddress }, { balance: BalanceStatus.Enough });
-  // }
+  async setBalanceEnough(walletAddress: string) {
+    await this.adminWalletRepository.update({ walletAddress }, { balance: BalanceStatus.Enough });
+  }
 }

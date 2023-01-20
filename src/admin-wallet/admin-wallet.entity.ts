@@ -15,8 +15,8 @@ export class AdminWallet {
   @Column({ nullable: false })
   inUse: AdminWalletUsage;
 
-  // @Column({ nullable: false })
-  // balance: BalanceStatus;
+  @Column({ nullable: false })
+  balance: BalanceStatus;
 
   @Column({ type: 'datetime', nullable: false })
   createdAt: Date;

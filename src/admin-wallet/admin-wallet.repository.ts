@@ -19,8 +19,7 @@ export class AdminWalletRepository extends Repository<AdminWallet> {
       const adminWallet = await queryRunner.manager
         .createQueryBuilder(AdminWallet, 'admin_wallet')
         .setLock('pessimistic_write')
-        .where({ inUse: AdminWalletUsage.NotInUse })
-        // .where({ inUse: AdminWalletUsage.NotInUse, balance: BalanceStatus.Enough })
+        .where({ inUse: AdminWalletUsage.NotInUse, balance: BalanceStatus.Enough })
         .orderBy('RAND()')
         .getOne();
 

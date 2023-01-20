@@ -159,7 +159,7 @@ export class Web3Consumer {
     try {
       await this.web3Service.transferMatic(body.sender.privateKey, body.sender.address, body.receiver.address, 3);
 
-      // await this.adminWalletService.setBalanceEnough(body.receiver.address);
+      await this.adminWalletService.setBalanceEnough(body.receiver.address);
 
       this.logger.log(`Account "${body.receiver.address}" balance is refilled up to 3 Matics`);
     } catch (err) {
