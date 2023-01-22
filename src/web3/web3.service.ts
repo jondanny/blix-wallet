@@ -88,11 +88,11 @@ export class Web3Service {
       });
 
       const maticBalance = await this.getMaticBalance(callerAccount.address);
-      if (maticBalance < 0.1) {
+      if (maticBalance < 5) {
         await this.adminWalletService.setBalanceOutOfMatic(callerAccount.address);
 
         await this.web3Queue.add(Web3QueueActions.RefillMatic, {
-          body: { sender: this.superAdminAccount, receiver: callerAccount },
+          body: { address: callerAccount.address },
         });
       }
 
@@ -145,19 +145,19 @@ export class Web3Service {
     }
   }
 
-  async transferMatic(privateKey: string, from: string, to: string, amount: number): Promise<string> {
+  async transferMatic(to: string, amount: number): Promise<string> {
     try {
       const gasPrice = await this.web3.eth.getGasPrice();
 
       const signedTransaction = await this.web3.eth.accounts.signTransaction(
         {
           to,
-          from,
+          from: this.superAdminAccount.address,
           gas: 21000,
           gasPrice,
           value: amount * 10 ** 18,
         },
-        privateKey,
+        this.superAdminAccount.privateKey,
       );
 
       let txHash;
@@ -221,7 +221,7 @@ export class Web3Service {
 
     console.log(`Create and grant admin role to "${wallet.address}"`);
 
-    await this.transferMatic(this.superAdminAccount.privateKey, this.superAdminAccount.address, wallet.address, amount);
+    await this.transferMatic(wallet.address, amount);
 
     console.log(`Sent ${amount} Matic to "${wallet.address}"`);
 

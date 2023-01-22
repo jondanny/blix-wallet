@@ -154,14 +154,33 @@ export class Web3Consumer {
 
   @Process(Web3QueueActions.RefillMatic)
   async refillMatic(job: Job<SyncJobBody>) {
-    const { body } = job.data;
+    const { address } = job.data.body;
 
     try {
-      await this.web3Service.transferMatic(body.sender.privateKey, body.sender.address, body.receiver.address, 3);
+      await this.web3Service.transferMatic(address, 3);
 
-      await this.adminWalletService.setBalanceEnough(body.receiver.address);
+      await this.adminWalletService.setBalanceEnough(address);
 
-      this.logger.log(`Account "${body.receiver.address}" balance is refilled up to 3 Matics`);
+      this.logger.log(`Account "${address}" balance is refilled up to 3 Matics`);
+    } catch (err) {
+      this.logger.error(err.message);
+
+      throw err;
+    }
+  }
+
+  @Process(Web3QueueActions.RefillAllAccounts)
+  async refillAllAccounts(job: Job<SyncJobBody>) {
+    const { addresses } = job.data.body;
+
+    try {
+      for (let i = 0; i < addresses.length; i++) {
+        await this.web3Service.transferMatic(addresses[i], 0.1);
+
+        await this.adminWalletService.setBalanceEnough(addresses[i]);
+
+        this.logger.log(`Account "${addresses[i]}" balance is refilled up to 3 Matics`);
+      }
     } catch (err) {
       this.logger.error(err.message);
 

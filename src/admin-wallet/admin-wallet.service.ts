@@ -27,4 +27,12 @@ export class AdminWalletService {
   async setBalanceEnough(walletAddress: string) {
     await this.adminWalletRepository.update({ walletAddress }, { balance: BalanceStatus.Enough });
   }
+
+  async checkLowBalance() {
+    return this.adminWalletRepository.countBy({ balance: BalanceStatus.OutOfMatic });
+  }
+
+  async findAccountWithNoMatic() {
+    return this.adminWalletRepository.find({ select: ['walletAddress'], where: { balance: BalanceStatus.OutOfMatic } });
+  }
 }

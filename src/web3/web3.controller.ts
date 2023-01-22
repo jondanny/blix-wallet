@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -10,6 +11,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { Web3Service } from './web3.service';
 import { WalletService } from '@src/wallet/wallet.service';
 import { NftTransferDto } from './dto/nft-transfer.dto';
@@ -22,7 +25,7 @@ import { NftMintDto } from './dto/nft-mint.dto';
 import { AdminWalletUsage } from '@src/admin-wallet/admin-wallet.types';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { NftService } from '@src/nft/nft.service';
-import { ConfigService } from '@nestjs/config';
+import { WEB3_QUEUE, Web3QueueActions } from './web3.types';
 
 @Controller()
 export class Web3Controller {
@@ -37,6 +40,7 @@ export class Web3Controller {
     private readonly nftService: NftService,
     private readonly adminWalletService: AdminWalletService,
     private readonly configService: ConfigService,
+    @InjectQueue(WEB3_QUEUE) private web3Queue: Queue,
   ) {
     this.network = this.configService.get('web3Config.network');
     this.nftContractAddress = this.configService.get('web3Config.nftContractAddress');
@@ -217,5 +221,32 @@ export class Web3Controller {
     this.logger.log(`Admin account "${address}" is created. Matic balance: ${body.amount}`);
 
     return adminWallet;
+  }
+
+  @ApiOperation({ description: `Find admin accounts short of gas fee and send Matic` })
+  @ApiResponse(ApiResponseHelper.created())
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.CREATED)
+  @Post('check-low-balance')
+  async checkLowBalance(@Body('password') password: string) {
+    if (password !== this.adminApiPassword)
+      throw new HttpException('Admin authentication failed', HttpStatus.BAD_REQUEST);
+
+    return this.adminWalletService.checkLowBalance();
+  }
+
+  @ApiOperation({ description: `Find admin accounts short of gas fee and send Matic` })
+  @ApiResponse(ApiResponseHelper.created())
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.CREATED)
+  @Post('refill-matic')
+  async refillMatic(@Body('password') password: string) {
+    if (password !== this.adminApiPassword)
+      throw new HttpException('Admin authentication failed', HttpStatus.BAD_REQUEST);
+
+    const accounts = await this.adminWalletService.findAccountWithNoMatic();
+    const addresses = accounts.map((account) => account.walletAddress);
+
+    await this.web3Queue.add(Web3QueueActions.RefillAllAccounts, { body: { addresses } });
   }
 }

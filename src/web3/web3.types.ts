@@ -16,6 +16,7 @@ export enum Web3QueueActions {
   Mint = 'mint',
   Transfer = 'transfer',
   RefillMatic = 'refill-matic',
+  RefillAllAccounts = 'refill-all-accounts',
 }
 
 export const WEB3_QUEUE = 'web3-queue';
