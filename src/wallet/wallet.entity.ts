@@ -15,7 +15,7 @@ export class Wallet {
   @Column({ nullable: false, length: 100 })
   walletAddress: string;
 
-  @ApiProperty({ description: `Wallet private key`, maximum: 66 })
+  @ApiProperty({ description: `Wallet private key`, maximum: 256 })
   @Column({ nullable: true, length: 100 })
   privateKey: string;
 

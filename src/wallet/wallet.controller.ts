@@ -46,4 +46,9 @@ export class WalletController {
       throw error;
     }
   }
+
+  @Post('wallet/encrypt')
+  async encryptPrivateKeys() {
+    return this.walletService.encryptPrivateKeys();
+  }
 }
