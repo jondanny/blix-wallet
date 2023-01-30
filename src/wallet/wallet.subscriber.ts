@@ -9,9 +9,7 @@ export class WalletSubscriber implements EntitySubscriberInterface<Wallet> {
   }
 
   async beforeInsert(event: InsertEvent<Wallet>) {
-    console.log('before event.entity:', event.entity);
     event.entity.privateKey = encrypt(event.entity.privateKey);
-    console.log('after event.entity:', event.entity);
   }
 
   async beforeUpdate(event: UpdateEvent<Wallet>) {

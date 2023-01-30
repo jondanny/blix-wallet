@@ -36,16 +36,4 @@ export class AdminWalletService {
   async findAccountWithNoMatic() {
     return this.adminWalletRepository.find({ select: ['walletAddress'], where: { balance: BalanceStatus.OutOfMatic } });
   }
-
-  async encryptPrivateKeys() {
-    const adminWallets = await this.adminWalletRepository.find();
-
-    adminWallets.forEach(async (wallet) => {
-      if (wallet.privateKey && wallet.privateKey.length < 68) {
-        wallet.privateKey = encrypt(wallet.privateKey);
-        console.log('wallet.privateKey:', wallet.privateKey);
-        await this.adminWalletRepository.save(wallet);
-      }
-    });
-  }
 }
