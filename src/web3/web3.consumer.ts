@@ -175,7 +175,7 @@ export class Web3Consumer {
 
     try {
       for (let i = 0; i < addresses.length; i++) {
-        await this.web3Service.transferMatic(addresses[i], 0.1);
+        await this.web3Service.transferMatic(addresses[i], 3);
 
         await this.adminWalletService.setBalanceEnough(addresses[i]);
 

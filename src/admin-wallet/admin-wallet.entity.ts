@@ -9,7 +9,7 @@ export class AdminWallet {
   @Column({ nullable: false, length: 100 })
   walletAddress: string;
 
-  @Column({ nullable: false, length: 100 })
+  @Column({ nullable: false, length: 256 })
   privateKey: string;
 
   @Column({ nullable: false })

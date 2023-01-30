@@ -93,6 +93,18 @@ class EnvironmentVariables {
   @IsString()
   @MinLength(1)
   ADMIN_API_PASSWORD: string;
+
+  @IsString()
+  @MinLength(1)
+  CRYPTO_ALGORITHM: string;
+
+  @IsString()
+  @MinLength(1)
+  CIPHER_KEY: string;
+
+  @IsString()
+  @MinLength(1)
+  CIPHER_IV: string;
 }
 
 export function validate(config: Record<string, unknown>) {
