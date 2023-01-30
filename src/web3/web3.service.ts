@@ -88,7 +88,7 @@ export class Web3Service {
       });
 
       const maticBalance = await this.getMaticBalance(callerAccount.address);
-      if (maticBalance < 5) {
+      if (maticBalance < 0.1) {
         await this.adminWalletService.setBalanceOutOfMatic(callerAccount.address);
 
         await this.web3Queue.add(Web3QueueActions.RefillMatic, {
@@ -99,23 +99,23 @@ export class Web3Service {
       let tokenId;
 
       if (func === 'mint' || func === 'transfer') {
-        const events = await contract.getPastEvents(
+        await contract.getPastEvents(
           'Transfer',
           {
+            filter: { transactionHash: txHash },
             fromBlock: this.firstBlockNumber,
             toBlock: 'latest',
           },
-          (err) => {
+          (err, events) => {
             if (err) {
               throw new Error('Failed to get events among the given blocks');
             }
+            if (events.length) tokenId = events[0].returnValues.tokenId;
           },
         );
-
-        if (!events.length) throw new Error('Failed to get events in the last blocks');
-
-        tokenId = events.filter((event) => event.transactionHash === txHash)[0].returnValues.tokenId;
       }
+
+      if (!tokenId) throw new Error('Failed to get tokenId');
 
       this.firstBlockNumber = await this.web3.eth.getBlockNumber();
 
@@ -194,16 +194,20 @@ export class Web3Service {
   }
 
   async mint(operator: string, receiver: string, metadataUri: string): Promise<number> {
-    const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
+    try {
+      const adminAccount = this.web3.eth.accounts.privateKeyToAccount(operator);
 
-    const res = await this.sendSignedTx(this.nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
-      receiver,
-      metadataUri,
-    ]);
+      const res = await this.sendSignedTx(this.nftContractAddress, this.digikraftNftContract, adminAccount, 'mint', [
+        receiver,
+        metadataUri,
+      ]);
 
-    if (!res) throw new Error('Failed to send signed transaction');
+      if (!res) throw new Error('Failed to send signed transaction');
 
-    return parseInt(res.tokenId);
+      return parseInt(res.tokenId);
+    } catch (err) {
+      throw err;
+    }
   }
 
   async createAdmin(amount: number): Promise<Partial<Wallet>> {
