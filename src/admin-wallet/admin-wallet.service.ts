@@ -3,7 +3,6 @@ import { AdminWalletRepository } from './admin-wallet.repository';
 import { AdminWalletCreateValidationDto } from './dto/admin-wallet.create.validation.dto';
 import { AdminWallet } from './admin-wallet.entity';
 import { AdminWalletUsage, BalanceStatus } from './admin-wallet.types';
-import { encrypt } from '@src/common/utils/cipher';
 
 @Injectable()
 export class AdminWalletService {
