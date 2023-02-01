@@ -9,11 +9,15 @@ export class WalletSubscriber implements EntitySubscriberInterface<Wallet> {
   }
 
   async beforeInsert(event: InsertEvent<Wallet>) {
-    event.entity.privateKey = encrypt(event.entity.privateKey);
+    if (event.entity.privateKey) {
+      event.entity.privateKey = encrypt(event.entity.privateKey);
+    }
   }
 
   async beforeUpdate(event: UpdateEvent<Wallet>) {
-    event.entity.privateKey = encrypt(event.entity.privateKey);
+    if (event.entity.privateKey) {
+      event.entity.privateKey = encrypt(event.entity.privateKey);
+    }
   }
 
   async beforeRemove(event: RemoveEvent<Wallet>) {
@@ -21,6 +25,8 @@ export class WalletSubscriber implements EntitySubscriberInterface<Wallet> {
   }
 
   async afterLoad(entity: Wallet): Promise<void> {
-    entity.privateKey = decrypt(entity.privateKey);
+    if (entity.privateKey) {
+      entity.privateKey = decrypt(entity.privateKey);
+    }
   }
 }
