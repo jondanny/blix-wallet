@@ -159,18 +159,19 @@ export class Web3Controller {
       }
 
       adminWalletId = id;
-      const wallets = await this.walletService.findAllByUserUuid(body.userUuid);
+      const blixWallet = await this.walletService.findByUserUuidAndType(body.userUuid, WalletType.Blix);
+      const metamaskWallet = await this.walletService.findByUserUuidAndType(body.userUuid, WalletType.Metamask);
 
-      if (wallets.length !== 2) {
-        throw new Error(`User does not have all Blix and Metamask wallet`);
+      if (!blixWallet || !metamaskWallet) {
+        throw new Error(`User does not have Blix or Metamask wallet`);
       }
 
       const tokenId = parseInt(body.tokenId.split(':')[2]);
-
+      console.log('operator:', operator);
       const transactionHash = await this.web3Service.transferNft(
         operator,
-        wallets[0].walletAddress,
-        wallets[1].walletAddress,
+        blixWallet.walletAddress,
+        metamaskWallet.walletAddress,
         tokenId,
       );
 
