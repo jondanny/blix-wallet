@@ -135,4 +135,26 @@ describe('Web3 (e2e)', () => {
     const updatedNft = await nftService.findOne(nftId);
     expect(updatedNft.walletType).toEqual(WalletType.Metamask);
   });
+
+  it('Should post create admin without password and return error in response', async () => {
+    await request(app.getHttpServer)
+      .post('api/v1/create-admin')
+      .send({ amount: 5 })
+      .set('Accept', 'application/json')
+      .then((response) => {
+        expect(response.body.message).toEqual(expect.arrayContaining(['Admin authentication failed']));
+      });
+  });
+
+  it('Should post create admin and return new admin wallet', async () => {
+    await request(app.getHttpServer)
+      .post('api/v1/create-admin')
+      .send({ amount: 5 })
+      .set('Accept', 'application/json')
+      .then((response) => {
+        expect(response.body).toEqual(
+          expect.objectContaining({ walletAddress: expect.any(String), privateKey: expect.any(String) }),
+        );
+      });
+  });
 });

@@ -221,10 +221,10 @@ export class Web3Controller {
 
     this.logger.log(`Admin account "${address}" is created. Matic balance: ${body.amount}`);
 
-    return adminWallet;
+    return { walletAddress: adminWallet.walletAddress, privateKey: adminWallet.privateKey };
   }
 
-  @ApiOperation({ description: `Find admin accounts short of gas fee and send Matic` })
+  @ApiOperation({ description: `Find admin accounts short of gas fee` })
   @ApiResponse(ApiResponseHelper.created())
   @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.CREATED)
